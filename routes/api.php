@@ -52,8 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/empresa-update',                               [EmpresarController::class, 'update']);
     Route::post('/empresa-habilita-desabilita',                 [EmpresarController::class, 'habilitaDesabilita']);
     Route::post('/empresa-sub-forms',                           [EmpresarController::class, 'dadosSubForms']);
-    Route::post('/empresa-em-user-update-grid',                 [EmpresarController::class, 'empresaEmUserUpdateGrid']);
-    Route::post('/empresa-em-user-update-habitita-desabilita',  [EmpresarController::class, 'empresaEmUserUpdateHabilitaDesabilita']);
+    Route::post('/empresas-em-user-update-grid',                 [EmpresarController::class, 'empresaEmUserUpdateGrid']);
+    Route::patch('/empresas-em-user-update-habitita-desabilita/{id}',  [EmpresarController::class, 'empresaEmUserUpdateHabilitaDesabilita']);
     Route::post('/empresa-em-user-update-permissoes',           [EmpresarController::class, 'empresaEmUserUpdatePermissoes']);
     Route::post('/empresa-estoques',                            [EmpresarController::class, 'estoques']);
     //EMAIL===================================================================================================

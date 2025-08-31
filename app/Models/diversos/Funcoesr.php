@@ -25,17 +25,7 @@ class Funcoesr extends Model
         return $permissoes;                        
     }    
     
-    public function arrayPermissaoUserPorEmpresa($idEmpresar, $idUser){
-        $permissoes = DB::table('permissaors')
-                            ->join('acessor_permissaor','permissaors.id', '=', 'acessor_permissaor.permissaor_id')    
-                            ->join('acessor_user','acessor_permissaor.acessor_id', '=', 'acessor_user.acessor_id')
-                            ->where('acessor_user.user_id', '=', $idUser)
-                            ->select(['permissaors.id'])
-                            ->pluck('id')->toarray();
-        return $permissoes;                        
-    }
-    
-    public function arrayPermissaorPorUser($idUser){
+    public function arrayPermissaoUserId($idUser){
         $permissoes = DB::table('acessor_permissaor')
                             ->join('acessor_user','acessor_permissaor.acessor_id', '=', 'acessor_user.acessor_id')
                             ->where('acessor_user.user_id', '=', $idUser)

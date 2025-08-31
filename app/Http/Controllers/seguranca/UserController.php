@@ -9,6 +9,7 @@ use App\Models\diversos\Funcoesr;
 use Illuminate\Support\Facades\Auth;
 use App\Models\cadastro\Empresar;
 use App\Models\cadastro\EmpresarUser;
+use App\Models\cadastro\EmpresaEmUserUpdateGridView;
 use App\Models\cadastro\Permissaor;
 use App\Models\cadastro\Acessor;
 use App\Models\cadastro\Setor;
@@ -117,14 +118,17 @@ class UserController extends Controller
         return response(['status'=>'ok', 'mensagem'=>'Gerado com Sucesso', 'dados'=>$dados]);
     }#======================================================================== Edit
     public function edit(UserRequestEdit $request, Funcoesr $funcoes){
+        $user       = $request->user();
+        $requestes  = $request->validated();
+
         //---[Usuário para edição]------------------------------------------------------------------------------------------
-        $userEdicao     = User::where('grupo_empresar_id' ,$request->user()->grupo_empresar_id)
-                              ->select('id', 'name', 'email', 'email_envio_msg')->find($request->id);
+        $userEdicao     = User::where('grupo_empresar_id' ,$user->grupo_empresar_id)
+                              ->select('id', 'name', 'email', 'email_envio_msg')->find($requestes['id']);
         //---[Empresas]-----------------------------------------------------------------------------------------------------
-            $empresasDoUser = EmpresarUser::where('user_id', '=', $request->id)
-                                          ->where('grupo_empresar_id' ,$request->user()->grupo_empresar_id)                
+            /*$empresasDoUser = EmpresarUser::where('user_id', '=', $requestes['id'])
+                                          ->where('grupo_empresar_id' ,$user->grupo_empresar_id)                
                                           ->pluck('empresar_id')->toarray();
-            $empresas       = Empresar::where('grupo_empresar_id', '=', $request->user()->grupo_empresar_id)
+            $empresas       = Empresar::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
                                       ->where('ativo', '=', 1)->get();
             $arrayObj       = [];
             foreach($empresas as $empresa){
@@ -134,32 +138,40 @@ class UserController extends Controller
                 }else{
                     array_push($arrayObj, $empresa);
                 }
-            }  
+            }*/
+            
+            
+
+            $empresas = EmpresaEmUserUpdateGridView::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
+                ->select('id', 'ativo', 'nome_fantasia', 'cnpj', 'cidade', 'bairro')
+                ->get();
+
+
         //---[Permissões]---------------------------------------------------------------------------------------------------
             $permissoes     = Permissaor::select("nome", "nome_exibicao")
                                         ->orderBy('nome_exibicao', 'ASC')->get();   
-            $permissoesUser = $funcoes->arrayPermissaoUserNome($request->id);
+            $permissoesUser = $funcoes->arrayPermissaoUserNome($requestes['id']);
 
         //---[Acessos]------------------------------------------------------------------------------------------------------
         $acessos        = Acessor::select('id', 'acesso')
                                  ->orderBy('acesso', 'ASC')->get();
         $acessosUser    = DB::table('acessors')
                             ->join('acessor_user','acessors.id', '=', 'acessor_user.acessor_id')    
-                            ->where('acessor_user.user_id', '=', $request->id)
+                            ->where('acessor_user.user_id', '=', $requestes['id'])
                             ->select(['acessors.acesso'])
                             ->pluck('acesso')->toarray();
         //------------------------------------------------------------------------------------------------------------------
-        $setoresObj        = Setor::where('grupo_empresar_id','=', $request->user()->grupo_empresar_id)
+        $setoresObj        = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)
                                 ->select('id', 'setor')
                                 ->orderBy('setor', 'ASC')->get(); 
         
-        $setorUserArray      = SetorUser::where('user_id','=', $request->id)
-                                        ->where('grupo_empresar_id' ,$request->user()->grupo_empresar_id)
+        $setorUserArray      = SetorUser::where('user_id','=', $requestes['id'])
+                                        ->where('grupo_empresar_id' ,$user->grupo_empresar_id)
                                         ->pluck('setor_id')->toarray();
         //------------------------------------------------------------------------------------------------------------------
 
         return response([   'usuario'           => $userEdicao,
-                            'empresas'          => $arrayObj, 
+                            'empresas'          => $empresas, 
                             'permissoes'        => $permissoes,
                             'permissoesUser'    => $permissoesUser,
                             'acessos'           => $acessos, 

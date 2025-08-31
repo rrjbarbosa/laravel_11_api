@@ -1,13 +1,17 @@
-# laravel_11_api
+# laravel_11_api --------------------------------------------------------------------------------------------
 Api rest Sanctum
 
-## RODAR PROJETO AMBIENTE DESENVOLVIMENTO
+## Criar View -----------------------------------------------------------------------------------------------
+    php artisan make:migration create_view_empresa_em_user_update_grid
+    php artisan migrate --path=/database/migrations/2025_08_15_150821_alter_clients_table_add_column_is_company_grupo.php
+
+## RODAR PROJETO AMBIENTE DESENVOLVIMENTO -------------------------------------------------------------------
 composer dump-autoload && php artisan db:wipe && php artisan migrate:refresh --seed && php artisan serve
 
-## CRIAR REQUEST
+## CRIAR REQUEST --------------------------------------------------------------------------------------------
     php artisan make:request user\\UserRequestEditarSenha                                 
 
-## LOG 
+## LOG ------------------------------------------------------------------------------------------------------
 use Illuminate\Support\Facades\Log;
 
 // Exemplos de níveis de log:
