@@ -8,7 +8,8 @@ use App\Models\ErrorLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\cadastro\Empresar;
-use App\Models\cadastro\EmpresarUser;
+use App\Models\cadastro\EmpresarUser; 
+use App\Models\cadastro\EmpresaEmUserUpdateGridView; 
 use App\Models\cadastro\Setor;
 use App\Models\cadastro\SetorUser;
 use App\Models\cadastro\Estoquer;
@@ -18,7 +19,8 @@ use App\Models\cadastro\Acessor;
 use App\Models\cadastro\Emailr;
 use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
-use App\Http\Requests\EmpresarRequest;
+use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest; 
+use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest; 
 
 class EmpresarController extends Controller
 {   #========================================================================
@@ -98,55 +100,44 @@ class EmpresarController extends Controller
     #=======================================================================
     #=======================================================================
     #=======================================================================
-    public function empresaEmUserUpdateGrid(Request $request){
-        $user   = Auth::user();
-        $empresasDoUser = EmpresarUser::where('user_id', '=', $request->user_id)->pluck('empresar_id')->toarray();
-
+    public function empresaEmUserUpdateGrid(EmpresaEmUserUpdateGridRequest $request){
+        $user       = $request->user();
         try{
-            $empresas = Empresar::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
-                            ->where('ativo', '=', 1)
-                            ->where(function($query)use($request){
-                                $camposArray = ["nome_fantasia", "cnpj", "cidade", "bairro"];
-                                foreach ($camposArray as $campo) {
-                                    if($request->$campo){
-                                        $query->where($campo, 'LIKE', '%' .$request->$campo . '%');
-                                    }
-                                }
-                            })->get();
-            $arrayObj = [];
-            foreach($empresas as $empresa){
-                if(!in_array($empresa->id, $empresasDoUser)){
-                    $empresa->ativo = 0;
-                    array_push($arrayObj, $empresa);
+            $empresas = EmpresaEmUserUpdateGridView::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
+                ->where(function($query)use($request){
+                    $camposArray = ["ativo", "nome_fantasia", "cnpj", "cidade", "bairro"];
+                    foreach ($camposArray as $campo) {
+                        if($request->$campo){
+                            $query->where($campo, 'LIKE', '%' .$request->$campo . '%');
+                        }
+                    }
+                })->select('id', 'ativo', 'nome_fantasia', 'cnpj', 'cidade', 'bairro')
+                ->get();
 
-                }else{
-                    array_push($arrayObj, $empresa);
-                }
-            }  
-            return response()->json(['dados' => $arrayObj]);
+            return response()->json(['dados' => $empresas]);
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
-        }
+        }        
     }#======================================================================= 
-    public function empresaEmUserUpdateHabilitaDesabilita(EmpresarRequest  $request){
-        $user   = Auth::user();      
+    public function empresaEmUserUpdateHabilitaDesabilita(EmpresaEmUserUpdateHabilitaDesabilitaRequest $request){
+        $user       = $request->user(); 
+        $requestes  = $request->validated();     
         try{
-            if($request->acao == 'DESATIVAR'){
-                EmpresarUser::where('empresar_id', $request->empresar_id)
-                                        ->where('user_id', $request->user_id)
-                                        ->where('grupo_empresar_id', $user->grupo_empresar_id)
-                                        ->delete();
-                return response([ 'status'=>'ok','mensagem' => 'Desabilitado']);                        
+            if($requestes['ativo'] == 'ativo'){
+                EmpresarUser::where('empresar_id', $requestes['id'])
+                    ->where('user_id', $requestes['user_id'])
+                    ->delete();
             }else{
                 EmpresarUser::create([  
-                    'empresar_id'           => $request->empresar_id, 
+                    'empresar_id'           => $requestes['id'], 
                     'grupo_empresar_id'     => $user->grupo_empresar_id,   
-                    'user_id'               => $user->id
+                    'user_id'               => $requestes['user_id']
                 ]);    
-                return response([ 'status'=>'ok','mensagem' => 'Habilitado']);
-            } 
+                
+            }
+            return response(['resultado'=>'Salvo com sucesso...'], 201); 
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
