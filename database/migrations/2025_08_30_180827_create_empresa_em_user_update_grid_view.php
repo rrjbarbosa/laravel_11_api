@@ -16,6 +16,7 @@ return new class extends Migration
             CREATE OR REPLACE VIEW empresa_em_user_update_grid_view AS
             SELECT 
                 empresars.id,
+                empresars.ativo as status_empresa,
                 empresars.nome_fantasia,
                 empresars.cnpj,
                 empresars.cidade,
@@ -24,7 +25,7 @@ return new class extends Migration
                 empresar_user.user_id,
                 CASE
                     WHEN (
-                        empresar_user.id IS NOT NULL
+                        empresar_user.user_id IS NOT NULL
                     ) THEN 'ativo'
                     ELSE 'inativo'
                 END AS ativo    

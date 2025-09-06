@@ -10,9 +10,7 @@ use App\Models\cadastro\Empresar;
 
 class EmpresaEmUserUpdateHabilitaDesabilitaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(Funcoesr $funcoes): bool
     {
         $msgsAuthorize = [];
@@ -25,6 +23,10 @@ class EmpresaEmUserUpdateHabilitaDesabilitaRequest extends FormRequest
         $empresa = Empresar::find($this->id);
         if($this->user()->grupo_empresar_id != $empresa->grupo_empresar_id){
             array_push($msgsAuthorize, 'Você não tem permissão a esse grupo de empresa.');   
+        }
+
+        if(!in_array($this->ativo, ['ativo', 'inativo'])){
+            array_push($msgsAuthorize, 'Tipo de dados do ativo não é reconhecido');   
         }
 
         if(count($msgsAuthorize) > 0){

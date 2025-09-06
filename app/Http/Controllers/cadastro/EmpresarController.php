@@ -20,7 +20,9 @@ use App\Models\cadastro\Emailr;
 use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
 use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest; 
-use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest; 
+use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
+use Illuminate\Support\Facades\Log;
+
 
 class EmpresarController extends Controller
 {   #========================================================================
@@ -125,6 +127,7 @@ class EmpresarController extends Controller
         $user       = $request->user(); 
         $requestes  = $request->validated();     
         try{
+            Log::info($requestes['ativo']);
             if($requestes['ativo'] == 'ativo'){
                 EmpresarUser::where('empresar_id', $requestes['id'])
                     ->where('user_id', $requestes['user_id'])

@@ -140,11 +140,23 @@ class UserController extends Controller
                 }
             }*/
             
-            
 
-            $empresas = EmpresaEmUserUpdateGridView::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
-                ->select('id', 'ativo', 'nome_fantasia', 'cnpj', 'cidade', 'bairro')
-                ->get();
+
+        $empresas = EmpresaEmUserUpdateGridView::where('status_empresa', 1)
+            ->where('grupo_empresar_id', $user->grupo_empresar_id)
+            ->where(function($q) use ($requestes) {
+                $q->where('user_id', $requestes['id'])
+                ->orWhereNull('user_id');
+            })
+            ->get();
+
+
+
+        /*$empresas = EmpresaEmUserUpdateGridView::where('status_empresa', 1)
+            ->where('user_id', $requestes['id'])
+            ->orWhere('user_id', null)
+            ->where('grupo_empresar_id', $user->grupo_empresar_id)
+            ->get();*/
 
 
         //---[Permissões]---------------------------------------------------------------------------------------------------
