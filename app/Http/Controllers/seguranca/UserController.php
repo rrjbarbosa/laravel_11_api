@@ -125,40 +125,17 @@ class UserController extends Controller
         $userEdicao     = User::where('grupo_empresar_id' ,$user->grupo_empresar_id)
                               ->select('id', 'name', 'email', 'email_envio_msg')->find($requestes['id']);
         //---[Empresas]-----------------------------------------------------------------------------------------------------
-            /*$empresasDoUser = EmpresarUser::where('user_id', '=', $requestes['id'])
-                                          ->where('grupo_empresar_id' ,$user->grupo_empresar_id)                
-                                          ->pluck('empresar_id')->toarray();
+            $empresasDoUser = EmpresarUser::where('user_id', '=', $requestes['id'])->pluck('empresar_id')->toarray();
+
             $empresas       = Empresar::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
-                                      ->where('ativo', '=', 1)->get();
-            $arrayObj       = [];
-            foreach($empresas as $empresa){
-                if(!in_array($empresa->id, $empresasDoUser)){
-                    $empresa->ativo = 0;
-                    array_push($arrayObj, $empresa);
-                }else{
-                    array_push($arrayObj, $empresa);
-                }
-            }*/
-            
-
-
-        $empresas = EmpresaEmUserUpdateGridView::where('status_empresa', 1)
-            ->where('grupo_empresar_id', $user->grupo_empresar_id)
-            ->where(function($q) use ($requestes) {
-                $q->where('user_id', $requestes['id'])
-                ->orWhereNull('user_id');
-            })
-            ->get();
-
-
-
-        /*$empresas = EmpresaEmUserUpdateGridView::where('status_empresa', 1)
-            ->where('user_id', $requestes['id'])
-            ->orWhere('user_id', null)
-            ->where('grupo_empresar_id', $user->grupo_empresar_id)
-            ->get();*/
-
-
+                                        ->where('ativo', '=', 1)
+                                        ->select('id', 'ativo', 'nome_fantasia','cnpj', 'cidade', 'bairro')
+                                        ->orderBy('nome_fantasia', 'ASC')
+                                        ->get();
+                        
+            foreach($empresas as $index=>$empresa){
+                in_array($empresa->id, $empresasDoUser) ? $empresas[$index]->ativo = 1 : $empresas[$index]->ativo = 2 ;
+            }
         //---[Permissões]---------------------------------------------------------------------------------------------------
             $permissoes     = Permissaor::select("nome", "nome_exibicao")
                                         ->orderBy('nome_exibicao', 'ASC')->get();   
