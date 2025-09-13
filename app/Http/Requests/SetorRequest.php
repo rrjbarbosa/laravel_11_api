@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\cadastro\Setor;
 use App\Models\User;
-use App\Models\diversos\Funcoesr;
 
 class SetorRequest extends FormRequest
 {
@@ -25,10 +24,10 @@ class SetorRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules(Funcoesr $funcoes)
+    public function rules()
     {
         $user               = auth()->user();
-        $permissoesDoUser   = $funcoes->arrayPermissaoUserNome($user->id);
+        $permissoesDoUser   = $user->arrayPermissaoUserNome($user->id);
         $setoresCadastrados = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)->pluck('setor')->toarray();
         $setoresCadastrados = strtoupper(json_encode($setoresCadastrados));     //-strtoupper Transforma o json em maiúsculo
         $setoresCadastrados = json_decode($setoresCadastrados);                 //-Retorna para array

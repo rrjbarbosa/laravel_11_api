@@ -23,10 +23,10 @@ class EmailrRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(Funcoesr $funcoes): array
+    public function rules(): array
     {
         $user              = auth()->user();
-        $permissoesDoUser  = $funcoes->arrayPermissaoUserNome($user->id);
+        $permissoesDoUser  = $user->arrayPermissaoUserNome($user->id);
         $emailsCadastrados = Emailr::where('empresar_id', $this->empresar_id)->pluck('email')->toarray();
         $emailsCadastrados = strtoupper(json_encode($emailsCadastrados));     //-strtoupper Transforma o json em maiúsculo
         $emailsCadastrados = json_decode($emailsCadastrados);                 //-Retorna para array

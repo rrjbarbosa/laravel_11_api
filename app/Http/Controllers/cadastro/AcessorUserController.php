@@ -52,7 +52,7 @@ class AcessorUserController extends Controller
                     }                                 
                 }                
                 DB::table('acessor_user')->insert($dadosArray);				 //-Salva dados no banco
-                $permissoesUser = $funcoes->arrayPermissaoUserNome($request->idUser);
+                $permissoesUser = $user->arrayPermissaoUserNome($request->idUser);
         DB::commit();             #---Efetiva as transações no Banco-----------------------------
                 return response(['status' => 'ok' , 'permissoesUser'=>$permissoesUser ]);
             }

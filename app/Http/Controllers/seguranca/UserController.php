@@ -54,7 +54,7 @@ class UserController extends Controller
     
     }#======================================================================== Login
     */
-    public function login(Request $request, Funcoesr $funcoes){
+    public function login(Request $request){
         $dados = $request->validate([
                 'email'     => 'required|string',
                 'password'  => 'required|string'
@@ -73,7 +73,7 @@ class UserController extends Controller
         $usuario        = (object) array('id' => $user->id, 'admin' => $user->admin, 'name' => $user->name, 'filtros_do_user' => $user->filtros_do_user);
         $token          = $user->createToken('tokenUsuario')->plainTextToken;
         $filtrosDoUser  = json_decode($user->filtros_do_user);    
-        $response       = ['status' => "true",'usuario' => $usuario, 'token' => $token, "permissoes"=>$funcoes->arrayPermissaoUserNome($user->id), "filtros_user"=>$filtrosDoUser];
+        $response       = ['status' => "true",'usuario' => $usuario, 'token' => $token, "permissoes"=>$user->arrayPermissaoUserNome($user->id), "filtros_user"=>$filtrosDoUser];
         return response($response, 201);
     }#===================================================================================
     public function gridPesquisa(UserRequestGridPesquisa $request, Funcoesr $funcoes){
@@ -117,7 +117,7 @@ class UserController extends Controller
         
         return response(['status'=>'ok', 'mensagem'=>'Gerado com Sucesso', 'dados'=>$dados]);
     }#======================================================================== Edit
-    public function edit(UserRequestEdit $request, Funcoesr $funcoes){
+    public function edit(UserRequestEdit $request){
         $user       = $request->user();
         $requestes  = $request->validated();
 
@@ -160,7 +160,7 @@ class UserController extends Controller
         //---[Permissões]---------------------------------------------------------------------------------------------------
             $permissoes     = Permissaor::select("nome", "nome_exibicao")
                                         ->orderBy('nome_exibicao', 'ASC')->get();   
-            $permissoesUser = $funcoes->arrayPermissaoUserNome($requestes['id']);
+            $permissoesUser = $user->arrayPermissaoUserNome($requestes['id']);
 
         //---[Acessos]------------------------------------------------------------------------------------------------------
         $acessos        = Acessor::select('id', 'acesso')
@@ -211,7 +211,7 @@ class UserController extends Controller
 
         return response([ 'status'=>'ok','mensagem' => 'Salvo com Sucesso']);
     }#========================================================================
-    public function ativaDesativaMultiplasTelas(Request $request, Funcoesr $funcoes){
+    public function ativaDesativaMultiplasTelas(Request $request){
         $user                    = Auth::user();
         $filtro                  = json_decode($user->filtros_do_user);                         //-decode transforma o Jsom em objeto
         empty($filtro) ? $filtro = json_decode('{}') : null;                                    //-Se for null cria um obj vazio
@@ -223,7 +223,7 @@ class UserController extends Controller
         $user                    = User::find($user->id);                                       //-Inicia criação de novo token de user LOgado Para o Front
         $token                   = $user->createToken('tokenUsuario')->plainTextToken;
         $filtrosDoUser           = json_decode($user->filtros_do_user);
-        $response                = ['status' => "true",'usuario' => $user, 'token' => $token, "permissoes"=>$funcoes->arrayPermissaoUserNome($user->id),  "filtros_user"=>$filtrosDoUser];
+        $response                = ['status' => "true",'usuario' => $user, 'token' => $token, "permissoes"=>$user->arrayPermissaoUserNome($user->id),  "filtros_user"=>$filtrosDoUser];
         return response($response, 201);
     }#========================================================================
     public function updateSeha(UserRequestEditarSenha $request){

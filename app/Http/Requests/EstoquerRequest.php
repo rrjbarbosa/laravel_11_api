@@ -6,8 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\cadastro\Estoquer;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use App\Models\diversos\Funcoesr;
 
 class EstoquerRequest extends FormRequest
 {
@@ -26,10 +24,10 @@ class EstoquerRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules(Funcoesr $funcoes)
+    public function rules()
     {
         $user                = auth()->user();
-        $permissoesDoUser    = $funcoes->arrayPermissaoUserNome($user->id);
+        $permissoesDoUser    = $user->arrayPermissaoUserNome($user->id);
         $estoquesCadastrados = Estoquer::where('empresar_id', $this->empresar_id)->pluck('estoque')->toarray();
         $estoquesCadastrados = strtoupper(json_encode($estoquesCadastrados));     //-strtoupper Transforma o json em maiúsculo
         $estoquesCadastrados = json_decode($estoquesCadastrados);                 //-Retorna para array

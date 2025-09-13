@@ -39,7 +39,7 @@ class AcessorPermissaorController extends Controller
 
                 $permissoes     = Permissaor::select("nome", "nome_exibicao")
                                             ->orderBy('nome_exibicao', 'ASC')->get();
-                $permissoesUser = $func->arrayPermissaoUserNome($request->user_id);
+                $permissoesUser = $user->arrayPermissaoUserNome($request->user_id);
                 
                 $acessos        = Acessor::select('id', 'acesso')
                                         ->orderBy('acesso', 'ASC')->get();
