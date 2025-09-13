@@ -39,7 +39,12 @@ class EmpresaEmUserUpdateGridRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id'       => 'string|required',
+            'nome_fantasia' => 'string',
+            'cnpj'          => 'string',
+            'cidade'        => 'string', 
+            'bairro'        => 'string',
+            'empresar_id'   => 'string'
         ];
     }
 }

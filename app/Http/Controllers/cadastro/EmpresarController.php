@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
 use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest; 
 use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 
@@ -104,19 +105,33 @@ class EmpresarController extends Controller
     #=======================================================================
     public function empresaEmUserUpdateGrid(EmpresaEmUserUpdateGridRequest $request){
         $user       = $request->user();
+        $requestes  = $request->validated();
+        $userId     = Arr::pull($requestes, 'user_id');
         try{
-            $empresas = EmpresaEmUserUpdateGridView::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
-                ->where(function($query)use($request){
-                    $camposArray = ["ativo", "nome_fantasia", "cnpj", "cidade", "bairro"];
-                    foreach ($camposArray as $campo) {
-                        if($request->$campo){
-                            $query->where($campo, 'LIKE', '%' .$request->$campo . '%');
-                        }
+            $empresas = Empresar::where('empresars.grupo_empresar_id', $user->grupo_empresar_id)
+                ->where('empresars.ativo', 1)
+                ->leftJoin('empresar_user', function ($join) use ($userId) {
+                    $join->on('empresars.id', '=', 'empresar_user.empresar_id')
+                        ->where('empresar_user.user_id', '=', $userId);
+                })
+                ->where(function($query)use($requestes){
+                    foreach ($requestes as $key=>$campo) {
+                        $query->where($key, 'LIKE', '%' .$campo . '%');
                     }
-                })->select('id', 'ativo', 'nome_fantasia', 'cnpj', 'cidade', 'bairro')
+                })      
+                ->select(
+                    'empresars.id',
+                    'empresars.nome_fantasia',
+                    'empresars.cnpj',
+                    'empresars.cidade',
+                    'empresars.bairro',
+                    'empresar_user.empresar_id',
+                    DB::raw('IF(empresar_user.empresar_id IS NULL, 0, 1) as ativo')
+                )
+                ->orderBy('empresars.nome_fantasia', 'ASC')
                 ->get();
-
-            return response()->json(['dados' => $empresas]);
+            
+                return response()->json(['dados' => $empresas]);                
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
@@ -126,9 +141,9 @@ class EmpresarController extends Controller
     public function empresaEmUserUpdateHabilitaDesabilita(EmpresaEmUserUpdateHabilitaDesabilitaRequest $request){
         $user       = $request->user(); 
         $requestes  = $request->validated();     
+
         try{
-            Log::info($requestes['ativo']);
-            if($requestes['ativo'] == 'ativo'){
+            if($requestes['ativo'] == 1){
                 EmpresarUser::where('empresar_id', $requestes['id'])
                     ->where('user_id', $requestes['user_id'])
                     ->delete();
@@ -137,15 +152,14 @@ class EmpresarController extends Controller
                     'empresar_id'           => $requestes['id'], 
                     'grupo_empresar_id'     => $user->grupo_empresar_id,   
                     'user_id'               => $requestes['user_id']
-                ]);    
-                
+                ]);
             }
-            return response(['resultado'=>'Salvo com sucesso...'], 201); 
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
-            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
         }
+        return response(['resultado'=>'Salvo com sucesso...'], 201);
     }#======================================================================= 
     public function estoques(Request $request){
         $user              = Auth::user();    
