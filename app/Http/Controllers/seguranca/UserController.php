@@ -126,20 +126,6 @@ class UserController extends Controller
                               ->select('id', 'name', 'email', 'email_envio_msg')
                               ->find($requestes['id']);
         //---[Empresas]-----------------------------------------------------------------------------------------------------
-            //Exemplo peformático para dezenas ou centenas de dados
-                /*$empresasDoUser = EmpresarUser::where('user_id', '=', $requestes['id'])->pluck('empresar_id')->toarray();
-
-                $empresas       = Empresar::where('grupo_empresar_id', '=', $user->grupo_empresar_id)
-                                            ->where('ativo', '=', 1)
-                                            ->select('id', 'ativo', 'nome_fantasia','cnpj', 'cidade', 'bairro')
-                                            ->orderBy('nome_fantasia', 'ASC')
-                                            ->get();
-                            
-                foreach($empresas as $index=>$empresa){
-                    in_array($empresa->id, $empresasDoUser) ? $empresas[$index]->ativo = 1 : $empresas[$index]->ativo = 0 ;
-                }*/
-
-            //Exemplo peformático milhares de dados
                 $empresas = Empresar::where('empresars.grupo_empresar_id', $user->grupo_empresar_id)
                     ->where('empresars.ativo', 1)
                     ->leftJoin('empresar_user', function ($join) use ($requestes) {
@@ -156,6 +142,29 @@ class UserController extends Controller
                     )
                     ->orderBy('empresars.nome_fantasia', 'ASC')
                     ->get();
+        //------------------------------------------------------------------------------------------------------------------
+        /*$setoresObj        = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)
+                                ->select('id', 'setor')
+                                ->orderBy('setor', 'ASC')->get(); 
+        
+        $setorUserArray      = SetorUser::where('user_id','=', $requestes['id'])
+                                        ->where('grupo_empresar_id' ,$user->grupo_empresar_id)
+                                        ->pluck('setor_id')->toarray();
+        */                
+
+        $setores = Setor::where('setors.grupo_empresar_id', $user->grupo_empresar_id)
+                    ->where('setors.ativo', 1)
+                    ->leftJoin('setor_users', function ($join) use ($requestes) {
+                        $join->on('setors.id', '=', 'setor_users.setor_id')
+                            ->where('setor_users.user_id', '=', $requestes['id']);
+                    })
+                    ->select(
+                        'setors.id',
+                        'setors.setor',
+                        DB::raw('IF(setor_users.setor_id IS NULL, 0, 1) as ativo')
+                    )
+                    ->orderBy('setors.setor', 'ASC')
+                    ->get();            
 
         //---[Permissões]---------------------------------------------------------------------------------------------------
             $permissoes     = Permissaor::select("nome", "nome_exibicao")
@@ -170,24 +179,15 @@ class UserController extends Controller
                             ->where('acessor_user.user_id', '=', $requestes['id'])
                             ->select(['acessors.acesso'])
                             ->pluck('acesso')->toarray();
-        //------------------------------------------------------------------------------------------------------------------
-        $setoresObj        = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)
-                                ->select('id', 'setor')
-                                ->orderBy('setor', 'ASC')->get(); 
         
-        $setorUserArray      = SetorUser::where('user_id','=', $requestes['id'])
-                                        ->where('grupo_empresar_id' ,$user->grupo_empresar_id)
-                                        ->pluck('setor_id')->toarray();
         //------------------------------------------------------------------------------------------------------------------
 
         return response([   'usuario'           => $userEdicao,
                             'empresas'          => $empresas, 
+                            'setores'           => $setores,
                             'permissoes'        => $permissoes,
-                            'permissoesUser'    => $permissoesUser,
                             'acessos'           => $acessos, 
-                            'acessosUser'       => $acessosUser,
-                            'setoresArray'      => $setorUserArray,
-                            'setoresObj'        => $setoresObj]);
+        ]);
     }
     #======================================================================== Update
     public function update(UserRequestUpdate $request, $id){

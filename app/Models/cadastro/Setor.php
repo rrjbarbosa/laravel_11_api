@@ -13,12 +13,5 @@ class Setor extends Model
     //protected $fillable =   [   ];  //-Podem ser atribuidos em massa
     protected $guarded = ['id'];      //-Não podem ser atribuidos em massa
 
-    protected $appends = ['css'];
-
-    public function getCssAttribute()
-    {
-        return $this->ativo == 1 ? 'ativo' : 'inativo';
-    }
-
   
 }
