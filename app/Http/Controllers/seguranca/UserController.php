@@ -126,22 +126,8 @@ class UserController extends Controller
                               ->select('id', 'name', 'email', 'email_envio_msg')
                               ->find($requestes['id']);
         //---[Empresas]-----------------------------------------------------------------------------------------------------
-                $empresas = Empresar::where('empresars.grupo_empresar_id', $user->grupo_empresar_id)
-                    ->where('empresars.ativo', 1)
-                    ->leftJoin('empresar_user', function ($join) use ($requestes) {
-                        $join->on('empresars.id', '=', 'empresar_user.empresar_id')
-                            ->where('empresar_user.user_id', '=', $requestes['id']);
-                    })
-                    ->select(
-                        'empresars.id',
-                        'empresars.nome_fantasia',
-                        'empresars.cnpj',
-                        'empresars.cidade',
-                        'empresars.bairro',
-                        DB::raw('IF(empresar_user.empresar_id IS NULL, 0, 1) as ativo')
-                    )
-                    ->orderBy('empresars.nome_fantasia', 'ASC')
-                    ->get();
+            $empresas = Empresar::empresasPorUsuarios($requestes['id'], $user->grupo_empresar_id);
+               
         //------------------------------------------------------------------------------------------------------------------
         /*$setoresObj        = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)
                                 ->select('id', 'setor')
@@ -150,9 +136,10 @@ class UserController extends Controller
         $setorUserArray      = SetorUser::where('user_id','=', $requestes['id'])
                                         ->where('grupo_empresar_id' ,$user->grupo_empresar_id)
                                         ->pluck('setor_id')->toarray();
-        */                
+        */            
+            $setores = Setor::setoresPorUsuarios($requestes['id'], $user->grupo_empresar_id);                                
 
-        $setores = Setor::where('setors.grupo_empresar_id', $user->grupo_empresar_id)
+        /*$setores = Setor::where('setors.grupo_empresar_id', $user->grupo_empresar_id)
                     ->where('setors.ativo', 1)
                     ->leftJoin('setor_users', function ($join) use ($requestes) {
                         $join->on('setors.id', '=', 'setor_users.setor_id')
@@ -164,7 +151,7 @@ class UserController extends Controller
                         DB::raw('IF(setor_users.setor_id IS NULL, 0, 1) as ativo')
                     )
                     ->orderBy('setors.setor', 'ASC')
-                    ->get();            
+                    ->get();  */          
 
         //---[Permissões]---------------------------------------------------------------------------------------------------
             $permissoes     = Permissaor::select("nome", "nome_exibicao")

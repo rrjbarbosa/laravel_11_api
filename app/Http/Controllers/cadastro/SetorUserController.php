@@ -11,6 +11,9 @@ use App\Models\ErrorLog;
 use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
 use App\Http\Requests\SetorUserRequest;
+use App\Models\cadastro\Empresar;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class SetorUserController extends Controller
 {
@@ -37,31 +40,31 @@ class SetorUserController extends Controller
         }
     }
     #=======================================================================
-    public function createDelete(SetorUserRequest $request, Funcoesr $func){
-       
-        DB::beginTransaction();   #---Inicia a transsação----------------------------------------
-        try{
-                $user       = Auth::user();
-                SetorUser::where('user_id', $request->idUsuario)->delete();            //-Deleta setores existentes           
-                $dadosArray = []; 	                                                    //-Cria Array
-                $setores = $request->setoresAraay;                                      //-Seta setores vindos do front
-                if(count($setores) >= 1){                                               //-Se existir setores salva no banco  
-                    foreach($setores as $setor){                                        //-Prepara array de dados para salvar 
-                        array_push( $dadosArray,[   'id'                => $func->gerarUuid(),                       
-                                                    'setor_id'          => $setor,
-                                                    'user_id'           => $request->idUsuario,           
-                                                    'grupo_empresar_id' => $user->grupo_empresar_id]); 
+    public function update(Request $request){
+        $user = $request->user(); // pega o usuário antes da transação
+
+        try {
+            DB::transaction(function () use ($request, $user) {
+                SetorUser::where('user_id', $request->user_id)->delete();           
+                $dadosArray = [];      
+                if(count($request->all()) >= 1){  
+                    foreach($request->input('setores') as $setor){                                        
+                        array_push($dadosArray, [
+                            'id'                => (string) Str::uuid(),                       
+                            'setor_id'          => $setor,
+                            'user_id'           => $request->user_id,           
+                            'grupo_empresar_id' => $user->grupo_empresar_id
+                        ]); 
                     }
-                
-                    DB::table('setor_users')->insert($dadosArray);				        //-Salva dados no banco
+                    DB::table('setor_users')->insert($dadosArray); // Salva dados no banco
                 }
-            DB::commit();             #---Efetiva as transações no Banco-----------------------------
-                return response([ 'status'=>'ok','mensagem' => '!!! Ok Salvo..' ]);
-        }
-        catch(\Exception $e){  
-            DB::rollBack();           #---Desfaz as transações---------------------------------------         
-                $erro = new ErrorLog($user, $e);
-                return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
-        }
-    }#========================================================================
-}
+            });
+            $setores = Setor::setoresPorUsuarios($request->user_id, $user->grupo_empresar_id);  
+            return response([ 'status'=>'ok','mensagem' => '!!! Ok Salvo..', 'dados'=>$setores ]);
+
+        } catch(\Exception $e){  
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
+        }#========================================================================
+    }
+}    
