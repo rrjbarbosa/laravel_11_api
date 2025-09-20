@@ -73,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/permissao-pesquisa-campos-head',          [PermissaorController::class, 'pesquisaCamposHead']);
     
     //SETOR USER =============================================================================================
-    Route::post('/setor-user-grid',                                 [SetorUserController::class, 'grid']);    
+    Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'grid']);    
     Route::patch('/setor-user-em-user-update-salvar/{user_id}',      [SetorUserController::class, 'update']);    
     //SETOR=====================================================================================================
     Route::post('/setor-grid',                              [SetorController::class, 'grid']);

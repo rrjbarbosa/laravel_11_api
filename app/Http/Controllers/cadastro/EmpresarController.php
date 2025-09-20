@@ -5,24 +5,17 @@ namespace App\Http\Controllers\cadastro;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ErrorLog;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\cadastro\Empresar;
 use App\Models\cadastro\EmpresarUser; 
-use App\Models\cadastro\EmpresaEmUserUpdateGridView; 
 use App\Models\cadastro\Setor;
-use App\Models\cadastro\SetorUser;
 use App\Models\cadastro\Estoquer;
 use App\Models\cadastro\EstoquerUser;
-use App\Models\cadastro\Permissaor;
-use App\Models\cadastro\Acessor;
 use App\Models\cadastro\Emailr;
 use Illuminate\Support\Facades\DB;
-use App\Models\diversos\Funcoesr;
 use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest; 
 use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 
 
 class EmpresarController extends Controller

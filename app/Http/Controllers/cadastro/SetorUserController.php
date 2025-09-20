@@ -3,44 +3,51 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\setores\SetoresEmUserUpdateGridPesquisaRequest;
+use App\Http\Requests\setores\SetoresEmUserUpdateHabilitaDesabilitaRequest;
 use App\Models\cadastro\Setor;
 use App\Models\cadastro\SetorUser;
-use Illuminate\Support\Facades\Auth;
 use App\Models\ErrorLog;
 use Illuminate\Support\Facades\DB;
-use App\Models\diversos\Funcoesr;
-use App\Http\Requests\SetorUserRequest;
-use App\Models\cadastro\Empresar;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 class SetorUserController extends Controller
 {
     #========================================================================
-    public function grid(Request $request){
-        $user   = Auth::user();
+    public function grid(SetoresEmUserUpdateGridPesquisaRequest $request){
+        $user       = $request->user();
+        $requestes  = $request->validated();
+        $userId     = Arr::pull($requestes, 'user_id');
         try{
-            $dados = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)
-                            ->where(function($query)use($request){
-                                $camposArray = ["setor"];
-                                foreach ($camposArray as $campo) {
-                                    if($request->$campo){
-                                        $query->where($campo, 'LIKE', '%' .$request->$campo . '%');
-                                    }
-                                }
-                            })
-                            ->select('id', 'ativo', 'setor')
-                            ->get();
-            return response()->json(['dados' => $dados]);
-        }
+            $setores = Setor::where('setors.grupo_empresar_id', $user->grupo_empresar_id)
+                ->where('setors.ativo', 1)
+                ->leftJoin('setor_users', function ($join) use ($userId) {
+                    $join->on('setors.id', '=', 'setor_users.setor_id')
+                        ->where('setor_users.user_id', '=', $userId);
+                })
+                ->where(function($query)use($requestes){
+                    foreach ($requestes as $key=>$campo) {
+                        $query->where($key, 'LIKE', '%' .$campo . '%');
+                    }
+                })      
+                ->select(
+                    'setors.id',
+                    'setors.setor',
+                    DB::raw('IF(setor_users.setor_id IS NULL, 0, 1) as ativo')
+                )
+                ->orderBy('setors.setor', 'ASC')
+                ->get();
+            
+                return response()->json(['dados' => $setores]);
+            }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
-        }
+        }     
     }
     #=======================================================================
-    public function update(Request $request){
+    public function update(SetoresEmUserUpdateHabilitaDesabilitaRequest $request){
         $user = $request->user(); // pega o usuário antes da transação
 
         try {
