@@ -41,8 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/acesso-permissoes-create_delete',             [AcessorPermissaorController::class, 'createDelete']);
     Route::post('/acesso-permissoes-modulo-create',             [AcessorPermissaorController::class, 'permissoesModuloCreate']);
     //ACESSO USER==============================================================================================
-    Route::post('/acesso-user-grid',                            [AcessorUserController::class, 'grid']);
-    Route::post('/acesso-user-create-delete',                   [AcessorUserController::class, 'createDelete']);
+    Route::post('/acesso-user-em-user-update-grid',                 [AcessorUserController::class, 'grid']);   
+    Route::patch('/acesso-user-em-user-update-salvar/{user_id}',    [AcessorUserController::class, 'salvar']);
+    Route::post('/acesso-user-create-delete',                       [AcessorUserController::class, 'createDelete']);
     //Comercial Email===========================================================================================
     Route::post('/comercial-email-grid',                        [ComercialEmailController::class, 'pesquisaCamposHead']);
     
@@ -72,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //PERMISSÃO=================================================================================================
     Route::post('/permissao-pesquisa-campos-head',          [PermissaorController::class, 'pesquisaCamposHead']);
     
-    //SETOR USER =============================================================================================
+    //SETOR USER ===============================================================================================
     Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'grid']);    
     Route::patch('/setor-user-em-user-update-salvar/{user_id}',      [SetorUserController::class, 'update']);    
     //SETOR=====================================================================================================

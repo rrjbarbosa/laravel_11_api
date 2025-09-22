@@ -11,6 +11,9 @@ use App\Models\ErrorLog;
 use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
 use App\Http\Requests\AcessorUserRequest;
+use App\Models\cadastro\Permissaor;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AcessorUserController extends Controller
 {
@@ -36,6 +39,37 @@ class AcessorUserController extends Controller
         }
     }
     #========================================================================
+    public function salvar(Request $request){
+        $user = $request->user();
+        try {
+            DB::transaction(function () use ($request, $user) {
+                $user_id    = $request->user_id; 
+                $grupo      = $request->user()->grupo_empresar_id;   
+               
+                AcessorUser::where('user_id', $request->user_id)->delete();
+                
+                $dados = collect($request->acessos)->map(function($acessorId) use ($user_id, $grupo) {
+                    return [
+                        'id'                => Str::uuid()->toString(),
+                        'user_id'           => $user_id,
+                        'acessor_id'        => $acessorId,
+                        'grupo_empresar_id' => $grupo,
+                    ];
+                })->toArray();
+
+                AcessorUser::insert($dados);
+            });
+            $permissoes = Permissaor::permissoesPorUsuario($request->user_id);
+              
+            return response([ 'status'=>'ok','mensagem' => '!!! Ok Salvo..', 'permissoes'=>$permissoes]);
+
+        } catch(\Exception $e){  
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
+        }#========================================================================
+
+    }
+    #========================================================================    
     public function createDelete(AcessorUserRequest $request, Funcoesr $funcoes){
         DB::beginTransaction();   #---Inicia a transsação----------------------------------------
             try{        

@@ -125,50 +125,12 @@ class UserController extends Controller
         $userEdicao     = User::where('grupo_empresar_id' ,$user->grupo_empresar_id)
                               ->select('id', 'name', 'email', 'email_envio_msg')
                               ->find($requestes['id']);
-        //---[Empresas]-----------------------------------------------------------------------------------------------------
-            $empresas = Empresar::empresasPorUsuarios($requestes['id'], $user->grupo_empresar_id);
-               
-        //------------------------------------------------------------------------------------------------------------------
-        /*$setoresObj        = Setor::where('grupo_empresar_id','=', $user->grupo_empresar_id)
-                                ->select('id', 'setor')
-                                ->orderBy('setor', 'ASC')->get(); 
         
-        $setorUserArray      = SetorUser::where('user_id','=', $requestes['id'])
-                                        ->where('grupo_empresar_id' ,$user->grupo_empresar_id)
-                                        ->pluck('setor_id')->toarray();
-        */            
-            $setores = Setor::setoresPorUsuarios($requestes['id'], $user->grupo_empresar_id);                                
-
-        /*$setores = Setor::where('setors.grupo_empresar_id', $user->grupo_empresar_id)
-                    ->where('setors.ativo', 1)
-                    ->leftJoin('setor_users', function ($join) use ($requestes) {
-                        $join->on('setors.id', '=', 'setor_users.setor_id')
-                            ->where('setor_users.user_id', '=', $requestes['id']);
-                    })
-                    ->select(
-                        'setors.id',
-                        'setors.setor',
-                        DB::raw('IF(setor_users.setor_id IS NULL, 0, 1) as ativo')
-                    )
-                    ->orderBy('setors.setor', 'ASC')
-                    ->get();  */          
-
-        //---[Permissões]---------------------------------------------------------------------------------------------------
-            $permissoes     = Permissaor::select("nome", "nome_exibicao")
-                                        ->orderBy('nome_exibicao', 'ASC')->get();   
-            $permissoesUser = $user->arrayPermissaoUserNome($requestes['id']);
-
-        //---[Acessos]------------------------------------------------------------------------------------------------------
-        $acessos        = Acessor::select('id', 'acesso')
-                                 ->orderBy('acesso', 'ASC')->get();
-        $acessosUser    = DB::table('acessors')
-                            ->join('acessor_user','acessors.id', '=', 'acessor_user.acessor_id')    
-                            ->where('acessor_user.user_id', '=', $requestes['id'])
-                            ->select(['acessors.acesso'])
-                            ->pluck('acesso')->toarray();
+        $empresas       = Empresar::empresasPorUsuarios($requestes['id'], $user->grupo_empresar_id);
+        $setores        = Setor::setoresPorUsuarios($requestes['id'], $user->grupo_empresar_id);                                
+        $permissoes     = Permissaor::permissoesPorUsuario($requestes['id']);   
+        $acessos        = Acessor::acessosPorUsuario($requestes['id']);
         
-        //------------------------------------------------------------------------------------------------------------------
-
         return response([   'usuario'           => $userEdicao,
                             'empresas'          => $empresas, 
                             'setores'           => $setores,

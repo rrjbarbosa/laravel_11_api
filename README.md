@@ -8,8 +8,12 @@ Api rest Sanctum
 ## RODAR PROJETO AMBIENTE DESENVOLVIMENTO -------------------------------------------------------------------
 composer dump-autoload && php artisan db:wipe && php artisan migrate:refresh --seed && php artisan serve
 
+## MODEL ----------------------------------------------------------------------------------------------------
+
+
 ## CRIAR REQUEST --------------------------------------------------------------------------------------------
     php artisan make:request user\\UserRequestEditarSenha                                 
+
 
 ## LOG ------------------------------------------------------------------------------------------------------
 use Illuminate\Support\Facades\Log;
