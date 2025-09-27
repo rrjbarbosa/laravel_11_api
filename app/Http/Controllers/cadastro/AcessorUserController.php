@@ -11,6 +11,7 @@ use App\Models\ErrorLog;
 use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
 use App\Http\Requests\AcessorUserRequest;
+use App\Http\Requests\acessos\AcessosEmUserUpdateSalvarRequest;
 use App\Models\cadastro\Permissaor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -18,28 +19,7 @@ use Illuminate\Support\Str;
 class AcessorUserController extends Controller
 {
     #========================================================================
-    public function grid(Request $request){
-        $user   = Auth::user();
-        try{
-            $dados = Acessor::where(function($query)use($request){
-                                $camposArray = ["acesso"];
-                                foreach ($camposArray as $campo) {
-                                    if($request->$campo){
-                                        $query->where($campo, 'LIKE', '%' .$request->$campo . '%');
-                                    }
-                                }
-                            })
-                            ->select('id', 'acesso')
-                            ->get();
-            return response()->json(['dados' => $dados]);
-        }
-        catch(\Exception $e){
-            $erro = new ErrorLog($user, $e);
-            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
-        }
-    }
-    #========================================================================
-    public function salvar(Request $request){
+    public function salvar(AcessosEmUserUpdateSalvarRequest $request){
         $user = $request->user();
         try {
             DB::transaction(function () use ($request, $user) {

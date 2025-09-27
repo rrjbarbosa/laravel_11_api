@@ -19,8 +19,12 @@ class SetoresEmUserUpdateHabilitaDesabilitaRequest extends FormRequest
             $msgsAuthorize[] = 'Você não tem permissão de Administrador.';    
         }
 
-        $setoresGrupoEntresa = Setor::where('grupo_empresar_id', $this->user()->grupo_empresar_id)->pluck('id')->toArray();
-        if (!empty(array_diff($this->setores, $setoresGrupoEntresa))) { //- Se for passado algum setor que não faz parte do grupo de empresa 
+        if(!$this->user_id){
+            array_push($msgsAuthorize, 'Usuário é obrigatório');   
+        }
+
+        $setoresGrupoEmpresa = Setor::where('grupo_empresar_id', $this->user()->grupo_empresar_id)->pluck('id')->toArray();
+        if (!empty(array_diff($this->setores, $setoresGrupoEmpresa))) { //- Se for passado algum setor que não faz parte do grupo de empresa 
             $msgsAuthorize[] = 'Algum setor não faz parte do grupo de empresa.';   
         }
 

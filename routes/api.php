@@ -41,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/acesso-permissoes-create_delete',             [AcessorPermissaorController::class, 'createDelete']);
     Route::post('/acesso-permissoes-modulo-create',             [AcessorPermissaorController::class, 'permissoesModuloCreate']);
     //ACESSO USER==============================================================================================
-    Route::post('/acesso-user-em-user-update-grid',                 [AcessorUserController::class, 'grid']);   
     Route::patch('/acesso-user-em-user-update-salvar/{user_id}',    [AcessorUserController::class, 'salvar']);
     Route::post('/acesso-user-create-delete',                       [AcessorUserController::class, 'createDelete']);
     //Comercial Email===========================================================================================
