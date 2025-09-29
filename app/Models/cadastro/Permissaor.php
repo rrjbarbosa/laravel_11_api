@@ -33,4 +33,23 @@ class Permissaor extends Model
 
         return $permissoes;
     }
+    static function permissoesPorAcesso($acessor_id) {
+        $permissoes = DB::table('permissaors')
+            ->leftJoin('acessor_permissaor', 'permissaors.id', '=', 'acessor_permissaor.permissaor_id')
+            //->leftJoin('acessors', 'acessor_permissaor.acessor_id', '=', 'acessors.id')
+            ->leftJoin('acessors', function($join) use ($acessor_id) {
+                $join->on('acessors.id', '=', 'acessor_permissaor.acessor_id')
+                    ->where('acessor_permissaor.acessor_id', '=', $acessor_id);
+            })            
+            ->select(
+                'permissaors.id',
+                'permissaors.nome',
+                'permissaors.nome_exibicao',
+                DB::raw('IF(acessors.id IS NULL, 0, 1) as ativo')
+            )
+            ->orderBy('permissaors.nome', 'ASC')
+            ->get();
+
+        return $permissoes;
+    }
 }

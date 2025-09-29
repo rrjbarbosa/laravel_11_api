@@ -70,7 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/estoque-user-grid',                       [EstoquerUserController::class, 'grid']);
     Route::put('/estoque-user-create_delete',               [EstoquerUserController::class, 'createDelete']);
     //PERMISSÃO=================================================================================================
-    Route::post('/permissao-pesquisa-campos-head',          [PermissaorController::class, 'pesquisaCamposHead']);
+    Route::post('/permissao-por-acesso',                    [PermissaorController::class, 'permissaoPorAcesso']);
     
     //SETOR USER ===============================================================================================
     Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'grid']);    
