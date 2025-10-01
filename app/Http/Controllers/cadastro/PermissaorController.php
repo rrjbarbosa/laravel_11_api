@@ -8,6 +8,7 @@ use App\Models\cadastro\Modulor;
 use Illuminate\Http\Request;
 use App\Models\cadastro\Permissaor;
 use App\Models\ErrorLog;
+use Illuminate\Support\Facades\DB;
 
 class PermissaorController extends Controller
 {
@@ -22,5 +23,38 @@ class PermissaorController extends Controller
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'],500);
         }
         return response()->json(['permissoes'=>$permissoes, 'modulos'=>$modulos], 200);
-    }    
+    }
+    
+    public function permissaoPorAcessoSalvar(Request $request){
+        $user = $request->user();
+        try{
+            DB::transaction(function () use ($request, $user) {
+                $user_id    = $request->user_id; 
+                $grupo      = $request->user()->grupo_empresar_id;   
+               
+                AcessorUser::where('user_id', $request->user_id)->delete();
+                
+                $dados = collect($request->acessos)->map(function($acessorId) use ($user_id, $grupo) {
+                    return [
+                        'id'                => Str::uuid()->toString(),
+                        'user_id'           => $user_id,
+                        'acessor_id'        => $acessorId,
+                        'grupo_empresar_id' => $grupo,
+                    ];
+                })->toArray();
+
+                AcessorUser::insert($dados);
+            });
+            $permissoes = Permissaor::permissoesPorUsuario($request->user_id);
+              
+            return response([ 'status'=>'ok','mensagem' => '!!! Ok Salvo..', 'permissoes'=>$permissoes]);
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'],500);
+        }
+        return response()->json(['permissoes'=>$permissoes, 'modulos'=>$modulos], 200);
+    }
+
+    
 }
