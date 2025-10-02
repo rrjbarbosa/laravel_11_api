@@ -34,28 +34,23 @@ class PermissaorController extends Controller
         $user = $request->user();
         try{
             DB::transaction(function () use ($request, $user) {
-                $acesso_id    = $request->acesso_id; 
-                $grupo      = $request->user()->grupo_empresar_id;   
-               
-                //AcessorPermissaor::where('user_id', $request->user_id)->delete();
-
-                $permissoesModulos = Permissaor::select('id', 'modulor_id')->get();
-                $permissoesModulos = json_decode($permissoesModulos); // O 'true' converte para array associativo
-
+                AcessorPermissaor::where('acessor_id', $request->acesso_id)->delete();                                                  // Remove permissões antigas do mesmo acessor
+                $acesso_id = $request->acesso_id; 
+                $grupo     = $user->grupo_empresar_id;  
+                $permissoesModulos = Permissaor::pluck('modulor_id', 'id')->toArray();                                                  // Busca todas permissões e converte para array associativo: id => modulor_id
                 
-                $dados = collect($request->acessos)->map(function($permissaoId) use ($acesso_id, $grupo, $permissoesModulos) {
+                $dados = collect($request->permissoes)->map(function($permissaoId) use ($acesso_id, $grupo, $permissoesModulos) {       // Monta os dados para inserir
                     return [
                         'id'                => Str::uuid()->toString(),
                         'acessor_id'        => $acesso_id,
                         'permissaor_id'     => $permissaoId,
-                        'modulor_id'        => collect($permissoesModulos)->where('id', $permissaoId)->pluck('modulor_id')->first(),
+                        'modulor_id'        => $permissoesModulos[$permissaoId] ,
                         'grupo_empresar_id' => $grupo,
                     ];
                 })->toArray();
-
-                /*AcessorPermissaor::insert($dados);*/
-                Log::info($permissoesModulos);
+                AcessorPermissaor::insert($dados);                                                                                      // Insere em lote (performático)
             });
+            
             $permissoes = Permissaor::permissoesPorUsuario($request->user_id);
               
             return response([ 'status'=>'ok','mensagem' => '!!! Ok Salvo..', 'permissoes'=>$permissoes]);
