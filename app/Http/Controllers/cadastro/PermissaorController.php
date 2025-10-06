@@ -30,7 +30,6 @@ class PermissaorController extends Controller
     }
     
     public function permissaoPorAcessoSalvar(Request $request){
-        sleep(3);
         $user = $request->user();
         try{
             DB::transaction(function () use ($request, $user) {
