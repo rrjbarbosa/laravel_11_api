@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\permissao\permissaoPorAcessoSalvarRequest;
 use App\Http\Requests\permissao\permissoesParaAcessoRequest;
 use App\Models\cadastro\AcessorPermissaor;
 use App\Models\cadastro\Modulor;
@@ -29,19 +30,19 @@ class PermissaorController extends Controller
         return response()->json(['permissoes'=>$permissoes, 'modulos'=>$modulos], 200);
     }
     
-    public function permissaoPorAcessoSalvar(Request $request){
+    public function permissaoPorAcessoSalvar(permissaoPorAcessoSalvarRequest $request){
         $user = $request->user();
         try{
             DB::transaction(function () use ($request, $user) {
-                AcessorPermissaor::where('acessor_id', $request->acesso_id)->delete();                                                  // Remove permissões antigas do mesmo acessor
-                $acesso_id = $request->acesso_id; 
+                AcessorPermissaor::where('acessor_id', $request->acessor_id)->delete();                                                  // Remove permissões antigas do mesmo acessor
+                $acessor_id = $request->acessor_id; 
                 $grupo     = $user->grupo_empresar_id;  
                 $permissoesModulos = Permissaor::pluck('modulor_id', 'id')->toArray();                                                  // Busca todas permissões e converte para array associativo: id => modulor_id
                 
-                $dados = collect($request->permissoes)->map(function($permissaoId) use ($acesso_id, $grupo, $permissoesModulos) {       // Monta os dados para inserir
+                $dados = collect($request->permissoes)->map(function($permissaoId) use ($acessor_id, $grupo, $permissoesModulos) {       // Monta os dados para inserir
                     return [
                         'id'                => Str::uuid()->toString(),
-                        'acessor_id'        => $acesso_id,
+                        'acessor_id'        => $acessor_id,
                         'permissaor_id'     => $permissaoId,
                         'modulor_id'        => $permissoesModulos[$permissaoId] ,
                         'grupo_empresar_id' => $grupo,
