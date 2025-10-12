@@ -21,13 +21,13 @@ class PermissaorController extends Controller
         $user = $request->user();
         try{
             $permissoes     = Permissaor::permissoesPorAcesso($request['acessor_id']);
-            $modulos        = Modulor::all()->select('id', 'modulo');
+            
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'],500);
         }
-        return response()->json(['permissoes'=>$permissoes, 'modulos'=>$modulos], 200);
+        return response()->json(['permissoes'=>$permissoes], 200);
     }
     
     public function permissaoPorAcessoSalvar(permissaoPorAcessoSalvarRequest $request){
