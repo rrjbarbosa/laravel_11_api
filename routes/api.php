@@ -32,8 +32,6 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     //ACESSO===================================================================================================
-    Route::post('/acesso-pesquisa-campos-head',                 [AcessorController::class, 'pesquisaCamposHead']);
-    Route::post('/acesso-selecionado-edit',                     [AcessorController::class, 'edit']);
     Route::post('/acesso-criar',                                [AcessorController::class, 'criar']);
     Route::put('/acesso-editar',                                [AcessorController::class, 'editar']); 
     Route::post('/acesso-excluir',                              [AcessorController::class, 'excluir']);

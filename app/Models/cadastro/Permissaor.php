@@ -25,7 +25,7 @@ class Permissaor extends Model
                 'permissaors.id',
                 'permissaors.nome',
                 'permissaors.nome_exibicao',
-                DB::raw('MAX(IF(acessors.id IS NULL, 0, 1)) as ativo')
+                DB::raw('MAX(IF(acessor_user.acessor_id IS NULL, 0, 1)) as ativo')
             )
             ->groupBy('permissaors.id', 'permissaors.nome', 'permissaors.nome_exibicao')
             ->orderBy('permissaors.nome', 'ASC')
