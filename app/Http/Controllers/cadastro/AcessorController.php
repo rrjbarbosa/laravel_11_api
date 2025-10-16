@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\acessos\AcessosCreateRequest;
 use Illuminate\Http\Request;
 use App\Models\cadastro\Acessor;
 use App\Models\ErrorLog;
@@ -10,11 +11,10 @@ use Illuminate\Support\Facades\Auth;
 
 class AcessorController extends Controller
 {
-    public function criar(Request $request){
-        $user   = Auth::user();
+    public function criar(AcessosCreateRequest $request){
         $acesso = Acessor::create(
             ['acesso'           => $request->acesso,
-            'grupo_empresar_id' => $user->grupo_empresar_id]
+            'grupo_empresar_id' => $request->user()->grupo_empresar_id]
         );
         $acessoCriado = [ 
                             'id'     => $acesso->id,
