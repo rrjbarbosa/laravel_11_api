@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //ACESSO===================================================================================================
     Route::post('/acesso-criar',                                [AcessorController::class, 'criar']);
     Route::put('/acesso-editar',                                [AcessorController::class, 'editar']); 
-    Route::post('/acesso-excluir',                              [AcessorController::class, 'excluir']);
+    Route::delete('/acesso-excluir/{id}',                       [AcessorController::class, 'excluir']);
     //ACESSO-PERMISSÕES========================================================================================
     Route::post('/acesso-permissoes-create_delete',             [AcessorPermissaorController::class, 'createDelete']);
     Route::post('/acesso-permissoes-modulo-create',             [AcessorPermissaorController::class, 'permissoesModuloCreate']);

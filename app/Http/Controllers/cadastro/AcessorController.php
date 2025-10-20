@@ -4,10 +4,9 @@ namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\acessos\AcessosCreateRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\acessos\AcessosDeleteRequest;
+use App\Http\Requests\acessos\AcessosUpdateRequest;
 use App\Models\cadastro\Acessor;
-use App\Models\ErrorLog;
-use Illuminate\Support\Facades\Auth;
 
 class AcessorController extends Controller
 {
@@ -23,7 +22,7 @@ class AcessorController extends Controller
 
         return response([ 'status'=>'ok','mensagem' => 'Salvo com Sucesso', 'acesso'=>$acessoCriado]);
     }#======================================================================== 
-    public function editar(Request $request){
+    public function editar(AcessosUpdateRequest $request){
         Acessor::where('id', $request->id)
                 ->update([
                             'acesso' => $request->acesso
@@ -31,7 +30,7 @@ class AcessorController extends Controller
 
         return response([ 'status'=>'ok','mensagem' => 'Salvo com Sucesso']);
     }#======================================================================== 
-    public function excluir(Request $request){
+    public function excluir(AcessosDeleteRequest $request){
         Acessor::where('id', $request->id)->delete();
 
         return response([ 'status'=>'ok','mensagem' => 'Salvo com Sucesso']);

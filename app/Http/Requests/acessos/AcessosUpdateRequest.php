@@ -6,7 +6,7 @@ use App\Models\cadastro\Acessor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class AcessosCreateRequest extends FormRequest
+class AcessosUpdateRequest extends FormRequest
 {
 
     public function authorize(): bool
@@ -26,6 +26,12 @@ class AcessosCreateRequest extends FormRequest
             $inputs->acesso = "";
         }
 
+        $acessosGrupoEmpresa = Acessor::where('grupo_empresar_id', $this->user()->grupo_empresar_id)->pluck('id')->toArray();
+        if (!in_array($this->id, $acessosGrupoEmpresa)) { //- Se não for passado o acesso, ou se o acesso não fizer parte do grupo de empresa 
+            $msgsAuthorize[] = 'O acesso não faz parte do seu grupo de empresa.';   
+            $inputs->acesso = "";
+        }
+
         if(count($msgsAuthorize) > 0){
             throw ValidationException::withMessages([
                 'msgsAuthorize' => $msgsAuthorize,
@@ -39,7 +45,7 @@ class AcessosCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'acesso'   => 'required'
+            'acesso'    => 'required'
         ];
     }
 

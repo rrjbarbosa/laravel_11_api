@@ -129,7 +129,7 @@ class UserController extends Controller
         $empresas       = Empresar::empresasPorUsuarios($requestes['id'], $user->grupo_empresar_id);
         $setores        = Setor::setoresPorUsuarios($requestes['id'], $user->grupo_empresar_id);                                
         $permissoes     = Permissaor::permissoesPorUsuario($requestes['id']);   
-        $acessos        = Acessor::acessosPorUsuario($requestes['id']);
+        $acessos        = Acessor::acessosPorUsuario($requestes['id'], $user->grupo_empresar_id);
         
         return response([   'usuario'           => $userEdicao,
                             'empresas'          => $empresas, 

@@ -14,12 +14,13 @@ class Acessor extends Model
 
     protected $fillable = ['id', 'acesso', 'grupo_empresar_id'];
 
-    static function acessosPorUsuario($user_id) {
+    static function acessosPorUsuario($user_id, $grupo_empresa) {
         $permissoes = DB::table('acessors')
             ->leftJoin('acessor_user', function($join) use ($user_id) {
                 $join->on('acessors.id', '=', 'acessor_user.acessor_id')
                     ->where('acessor_user.user_id', '=', $user_id);
             })
+            ->where('acessors.grupo_empresar_id', '=', $grupo_empresa)
             ->select(
                 'acessors.id',
                 'acessors.acesso',
