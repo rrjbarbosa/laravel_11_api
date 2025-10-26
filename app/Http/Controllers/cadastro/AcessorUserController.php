@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\cadastro\Acessor;
 use App\Models\cadastro\AcessorUser;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ErrorLog;
 use Illuminate\Support\Facades\DB;
 use App\Models\diversos\Funcoesr;
-use App\Http\Requests\AcessorUserRequest;
+use App\Http\Requests\acessoUser\AcessorUserRequest;
 use App\Http\Requests\acessos\AcessosEmUserUpdateSalvarRequest;
 use App\Models\cadastro\Permissaor;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AcessorUserController extends Controller

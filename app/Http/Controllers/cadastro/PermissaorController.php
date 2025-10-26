@@ -6,13 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\permissao\permissaoPorAcessoSalvarRequest;
 use App\Http\Requests\permissao\permissoesParaAcessoRequest;
 use App\Models\cadastro\AcessorPermissaor;
-use App\Models\cadastro\Modulor;
-use Illuminate\Http\Request;
 use App\Models\cadastro\Permissaor;
 use App\Models\ErrorLog;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Microsoft\Graph\Generated\Models\Permission;
 use Illuminate\Support\Str;
 
 class PermissaorController extends Controller

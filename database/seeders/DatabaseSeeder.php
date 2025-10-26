@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             AcessorSeeder::class,
             AcessorPermissaorSeeder::class,
             AcessorUserSeeder::class,
-            EmailrTableSeeder::class,
         ]);
 
 

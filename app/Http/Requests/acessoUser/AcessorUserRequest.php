@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\acessoUser;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class AcessorPermissaorRequest extends FormRequest
+class AcessorUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,7 +20,7 @@ class AcessorPermissaorRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
+    {   
         $user = auth()->user();
         if($user->admin != 1 || !$this->acao){ return [ 'semPermissaoAdmin' => 'required' ]; }
         
@@ -31,7 +30,7 @@ class AcessorPermissaorRequest extends FormRequest
     }
     public function messages(){
         return [
-            'semPermissaoAdmin.required' => 'Sem permissão ao Cadastro de Usuários.'
+            'semPermissaoAdmin.required' => 'Sem permissão ao Cadastro de Usuários'
         ];
     }
 }
