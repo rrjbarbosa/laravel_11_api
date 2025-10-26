@@ -32,8 +32,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/acesso-user-em-user-update-salvar/{user_id}',    [AcessorUserController::class, 'salvar']);
     Route::post('/acesso-user-create-delete',                       [AcessorUserController::class, 'createDelete']);
     //EMPRESA==================================================================================================
-    Route::post('/empresas-em-user-update-grid',                 [EmpresarController::class, 'empresaEmUserUpdateGrid']);
-    Route::patch('/empresas-em-user-update-habitita-desabilita/{id}',  [EmpresarController::class, 'empresaEmUserUpdateHabilitaDesabilita']);
+    Route::get('/empresas',                                             [EmpresarController::class, 'empresas']);
+    Route::patch('/empresas-habitita-desabilita/{id}',                  [EmpresarController::class, 'habilitaDesabilita']);
+    Route::post('/empresas-em-user-update-grid',                        [EmpresarController::class, 'empresaEmUserUpdateGrid']);
+    Route::patch('/empresas-em-user-update-habitita-desabilita/{id}',   [EmpresarController::class, 'empresaEmUserUpdateHabilitaDesabilita']);
     //PERMISSÃO=================================================================================================
     Route::post('/permissao-por-acesso',                        [PermissaorController::class, 'permissaoPorAcesso']);
     Route::patch('/permissao-por-acesso-salvar/{acessor_id}',   [PermissaorController::class, 'permissaoPorAcessoSalvar']);

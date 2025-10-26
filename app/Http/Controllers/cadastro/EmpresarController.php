@@ -9,11 +9,49 @@ use App\Models\cadastro\EmpresarUser;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest; 
 use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
+use App\Http\Requests\empresas\EmpresaGridRequest;
+use App\Http\Requests\empresas\EmpresaHabilitaDesabilitaRequest;
 use Illuminate\Support\Arr;
 
-
 class EmpresarController extends Controller
-{   public function empresaEmUserUpdateGrid(EmpresaEmUserUpdateGridRequest $request){
+{   
+    public function empresas(EmpresaGridRequest $request){
+        $user       = $request->user();
+        try{
+            $empresas = Empresar::where('grupo_empresar_id', $user->grupo_empresar_id)
+                ->select(
+                    'id',
+                    'ativo',
+                    'nome_fantasia',
+                    'razao_social',
+                    'cnpj',
+                    'cidade',
+                    'bairro'
+                )
+                ->orderBy('nome_fantasia', 'ASC')
+                ->get();
+            
+                return response()->json(['dados' => $empresas]);                
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
+        }        
+    }#=======================================================================
+    public function habilitaDesabilita(EmpresaHabilitaDesabilitaRequest $request){
+        $user       = $request->user(); 
+        $empressa   = Empresar::find($request->id);
+
+        try{
+            Empresar::where('id', $empressa->id)->update(['ativo' => $empressa->ativo == 1 ? 0 : 1]);
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['resultado'=>'Salvo com sucesso...'], 201);        
+    }#=======================================================================
+    public function empresaEmUserUpdateGrid(EmpresaEmUserUpdateGridRequest $request){
         $user       = $request->user();
         $requestes  = $request->validated();
         $userId     = Arr::pull($requestes, 'user_id');
