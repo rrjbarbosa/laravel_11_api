@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\empresas\EmpresaEditRequest;
 use App\Models\ErrorLog;
 use App\Models\cadastro\Empresar;
 use App\Models\cadastro\EmpresarUser;
@@ -11,6 +12,8 @@ use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest;
 use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
 use App\Http\Requests\empresas\EmpresaGridRequest;
 use App\Http\Requests\empresas\EmpresaHabilitaDesabilitaRequest;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
 class EmpresarController extends Controller
@@ -38,6 +41,20 @@ class EmpresarController extends Controller
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
         }        
     }#=======================================================================
+    public function edit(EmpresaEditRequest $request){
+        $user       = $request->user(); 
+
+        try{
+            $empresa = Empresar::find($request->id);
+            $empresa->makeHidden(['grupo_empresar_id', 'ativo', 'created_at', 'updated_at']);   //-Retira dados desnecessários         
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['empresa'=>$empresa], 201);        
+    }
+    #=======================================================================
     public function habilitaDesabilita(EmpresaHabilitaDesabilitaRequest $request){
         $user       = $request->user(); 
         $empressa   = Empresar::find($request->id);
