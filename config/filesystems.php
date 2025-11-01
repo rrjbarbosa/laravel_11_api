@@ -29,15 +29,16 @@ return [
     */
 
     'disks' => [
-
-        'local' => [
+         'local' => [
             'driver' => 'local',
-            'root' => storage_path('../../anexos'),
+            'root' => storage_path('app'),
             'throw' => false,
-        ],
-        'pastaarquivos' => [                                                                  //-Para Download
+        ],        
+        'anexos' => [                                       // DISCO ANEXOS — pasta externa ao lado do projeto
             'driver' => 'local',
-            'root' => '../../anexos',				 //-ADICIONADO     para informar o caminho dos arquivos fora da pasta storage
+            'root' => base_path('../anexos'),               // Pasta 'anexos' ao lado da pasta do projeto:
+            'throw' => false,
+            // opcional: 'url' => env('APP_URL') . '/anexos', 'visibility' => 'public'
         ],
         'public' => [
             'driver' => 'local',
