@@ -33,7 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/acesso-user-create-delete',                       [AcessorUserController::class, 'createDelete']);
     //EMPRESA==================================================================================================
     Route::get('/empresas',                                             [EmpresarController::class, 'empresas']);
-    Route::get('/empresa-edit/{id}',                                    [EmpresarController::class, 'edit']);
+    Route::get('/empresa-edit/{id}',                                    [EmpresarController::class, 'edit']); 
+    Route::post('/empresa-update',                                       [EmpresarController::class, 'update']); 
     Route::patch('/empresas-habitita-desabilita/{id}',                  [EmpresarController::class, 'habilitaDesabilita']);
     Route::post('/empresas-em-user-update-grid',                        [EmpresarController::class, 'empresaEmUserUpdateGrid']);
     Route::patch('/empresas-em-user-update-habitita-desabilita/{id}',   [EmpresarController::class, 'empresaEmUserUpdateHabilitaDesabilita']);

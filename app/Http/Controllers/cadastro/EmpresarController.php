@@ -13,8 +13,11 @@ use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
 use App\Http\Requests\empresas\EmpresaGridRequest;
 use App\Http\Requests\empresas\EmpresaHabilitaDesabilitaRequest;
 use App\Models\User;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class EmpresarController extends Controller
 {   
@@ -42,11 +45,18 @@ class EmpresarController extends Controller
         }        
     }#=======================================================================
     public function edit(EmpresaEditRequest $request){
-        $user       = $request->user(); 
-
+        $user = $request->user(); 
         try{
             $empresa = Empresar::find($request->id);
-            $empresa->makeHidden(['grupo_empresar_id', 'ativo', 'created_at', 'updated_at']);   //-Retira dados desnecessários         
+            $empresa->imgBase64 = null;
+            $disk    = Storage::disk('anexos');                                                //-Disco 'anexos' para recuperar a imagem, configurardo em config/filesystems.php
+            if ($disk->exists($empresa->anexo_logomarca)) {
+                $mimeType = $disk->mimeType($empresa->anexo_logomarca);
+                $imageContent = $disk->get($empresa->anexo_logomarca);
+                $imageBase64 = base64_encode($imageContent);
+                $empresa->imgBase64 = 'data:' . $mimeType . ';base64,' . $imageBase64;
+            }            
+            $empresa->makeHidden(['grupo_empresar_id', 'ativo', 'created_at', 'updated_at']);
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
@@ -61,6 +71,26 @@ class EmpresarController extends Controller
 
         try{
             Empresar::where('id', $empressa->id)->update(['ativo' => $empressa->ativo == 1 ? 0 : 1]);
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['resultado'=>'Salvo com sucesso...'], 201);        
+    }#=======================================================================
+    public function update(Request $request){
+        $user               = Auth::user();
+
+        try{
+            if($request->imgNome){
+                $imagemSalva = Storage::disk('anexos')->put($user->grupo_empresar_id . '/empresa' , $request->file('imgParaUpload'));
+            }
+        
+            Empresar::where('id', $request->id)
+                ->update([
+                    'anexo_logomarca' =>  $request->imgNome ?  $imagemSalva : null,
+                    'nome_fantasia'   => $request->nome_fantasia                    
+            ]);
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
