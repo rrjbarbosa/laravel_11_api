@@ -29,7 +29,7 @@ class Empresar extends Model
                     ->select(
                         'empresars.id',
                         'empresars.nome_fantasia',
-                        'empresars.cnpj',
+                        'empresars.cnpjCpf',
                         'empresars.cidade',
                         'empresars.bairro',
                         DB::raw('IF(empresar_user.empresar_id IS NULL, 0, 1) as ativo')

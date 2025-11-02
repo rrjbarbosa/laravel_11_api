@@ -12,12 +12,16 @@ use App\Http\Requests\empresas\EmpresaEmUserUpdateHabilitaDesabilitaRequest;
 use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
 use App\Http\Requests\empresas\EmpresaGridRequest;
 use App\Http\Requests\empresas\EmpresaHabilitaDesabilitaRequest;
+use App\Http\Requests\empresas\EmpresaUpdate;
 use App\Models\User;
-use Illuminate\Container\Attributes\Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log as FacadesLog;
+
+use function Illuminate\Log\log;
 
 class EmpresarController extends Controller
 {   
@@ -30,7 +34,8 @@ class EmpresarController extends Controller
                     'ativo',
                     'nome_fantasia',
                     'razao_social',
-                    'cnpj',
+                    'cnpjOuCpf',
+                    'cnpjCpf',
                     'cidade',
                     'bairro'
                 )
@@ -49,11 +54,12 @@ class EmpresarController extends Controller
         try{
             $empresa = Empresar::find($request->id);
             $empresa->imgBase64 = null;
-            $disk    = Storage::disk('anexos');                                                //-Disco 'anexos' para recuperar a imagem, configurardo em config/filesystems.php
-            if ($disk->exists($empresa->anexo_logomarca)) {
-                $mimeType = $disk->mimeType($empresa->anexo_logomarca);
-                $imageContent = $disk->get($empresa->anexo_logomarca);
-                $imageBase64 = base64_encode($imageContent);
+            
+            if($empresa->anexo_logomarca && Storage::disk('anexos')->exists($empresa->anexo_logomarca)) {
+                $disk               = Storage::disk('anexos');                              //-Disco 'anexos' para recuperar a imagem, configurardo em config/filesystems.php
+                $mimeType           = $disk->mimeType($empresa->anexo_logomarca);
+                $imageContent       = $disk->get($empresa->anexo_logomarca);
+                $imageBase64        = base64_encode($imageContent);
                 $empresa->imgBase64 = 'data:' . $mimeType . ';base64,' . $imageBase64;
             }            
             $empresa->makeHidden(['grupo_empresar_id', 'ativo', 'created_at', 'updated_at']);
@@ -78,18 +84,36 @@ class EmpresarController extends Controller
         }
         return response(['resultado'=>'Salvo com sucesso...'], 201);        
     }#=======================================================================
-    public function update(Request $request){
+    public function update(EmpresaUpdate $request){
         $user               = Auth::user();
-
+        $empresa = Empresar::find($request->id); 
         try{
             if($request->imgNome){
-                $imagemSalva = Storage::disk('anexos')->put($user->grupo_empresar_id . '/empresa' , $request->file('imgParaUpload'));
-            }
-        
+                if ($empresa->anexo_logomarca && Storage::disk('anexos')->exists($empresa->anexo_logomarca)) {                          //-Deleta imagem se existir ao atualizar
+                    Storage::disk('anexos')->delete($empresa->anexo_logomarca);
+                }
+                $imagemSalva = Storage::disk('anexos')->put($user->grupo_empresar_id . '/empresa' , $request->file('imgParaUpload'));   //-Atualiza a imagem
+            }            
             Empresar::where('id', $request->id)
                 ->update([
-                    'anexo_logomarca' =>  $request->imgNome ?  $imagemSalva : null,
-                    'nome_fantasia'   => $request->nome_fantasia                    
+                    'anexo_logomarca'   => $request->imgNome ?  $imagemSalva : $empresa->anexo_logomarca,
+                    'nome_fantasia'     => $request->nome_fantasia,
+                    'razao_social'      => $request->razao_social,
+                    'cnpjOuCpf'         => $request->cnpjOuCpf,
+                    'cnpjCpf'           => $request->cnpjCpf,
+                    'insc_estadual'     => $request->insc_estadual,
+                    'insc_municipal'    => $request->insc_municipal,
+                    'rua'               => $request->rua,
+                    'numero'            => $request->numero,
+                    'bairro'            => $request->bairro,
+                    'cidade'            => $request->cidade,
+                    'cep'               => $request->cep,
+                    'uf'                => $request->uf,
+                    'site'              => $request->site,
+                    'email'             => $request->email,
+                    'tel_um'            => $request->tel_um,
+                    'tel_dois'          => $request->tel_dois,
+                    'tel_tres'          => $request->tel_tres,                    
             ]);
         }
         catch(\Exception $e){
@@ -117,7 +141,7 @@ class EmpresarController extends Controller
                 ->select(
                     'empresars.id',
                     'empresars.nome_fantasia',
-                    'empresars.cnpj',
+                    'empresars.cnpjCpf',
                     'empresars.cidade',
                     'empresars.bairro',
                     'empresar_user.empresar_id',

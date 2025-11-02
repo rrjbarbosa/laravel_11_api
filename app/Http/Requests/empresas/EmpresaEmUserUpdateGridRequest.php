@@ -41,7 +41,7 @@ class EmpresaEmUserUpdateGridRequest extends FormRequest
         return [
             'user_id'       => 'string|required',
             'nome_fantasia' => 'string',
-            'cnpj'          => 'string',
+            'cnpjCpf'       => 'string',
             'cidade'        => 'string', 
             'bairro'        => 'string',
             'empresar_id'   => 'string'

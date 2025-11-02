@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('anexo_logomarca')->nullable(true);
             $table->string('nome_fantasia')->nullable(false);
             $table->string('razao_social')->nullable(false);
-            $table->string('cnpj')->nullable(true);
+            $table->string('cnpjOuCpf')->nullable(false);
+            $table->string('cnpjCpf')->nullable(true);
             $table->string('insc_estadual')->nullable(true);
             $table->string('insc_municipal')->nullable(true);
             $table->string('rua')->nullable(true);

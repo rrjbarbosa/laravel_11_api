@@ -20,7 +20,8 @@ class EmpresarSeeder extends Seeder
             [
                 'nome_fantasia' => 'A1 Empresa um',
                 'razao_social' => 'A1 Empresa um Ltda',
-                'cnpj' => '1111111111',
+                'cnpjOuCpf'=> 'cnpj',
+                'cnpjCpf' => '1111111111',
                 'insc_estadual' => '111',
                 'insc_municipal' => '1111',
                 'rua' => 'Rua Um',
@@ -43,7 +44,8 @@ class EmpresarSeeder extends Seeder
             [
                'nome_fantasia' => 'A2 Empresa dois',
                 'razao_social' => 'A2 Empresa dois Ltda',
-                'cnpj' => '2222222222',
+                'cnpjOuCpf'=> 'cnpj',
+                'cnpjCpf' => '2222222222',
                 'insc_estadual' => '222',
                 'insc_municipal' => '2222',
                 'rua' => 'Rua Dois',
@@ -66,7 +68,8 @@ class EmpresarSeeder extends Seeder
             [
                 'nome_fantasia' => 'A3  Empresa treis Extrangeira',
                 'razao_social' => 'A3 Empresa treis Ltda',
-                'cnpj' => '3333333333332',
+                'cnpjOuCpf'=> 'cnpj',
+                'cnpjCpf' => '3333333333332',
                 'insc_estadual' => '333',
                 'insc_municipal' => '33333',
                 'rua' => 'Rua Tres',
@@ -89,7 +92,8 @@ class EmpresarSeeder extends Seeder
             [
                 'nome_fantasia' => 'A3  Empresa treis Extrangeira',
                 'razao_social' => 'A3 Empresa treis Ltda',
-                'cnpj' => '3333333333332',
+                'cnpjOuCpf'=> 'cnpj',
+                'cnpjCpf' => '3333333333332',
                 'insc_estadual' => '333',
                 'insc_municipal' => '33333',
                 'rua' => 'Rua Tres',
