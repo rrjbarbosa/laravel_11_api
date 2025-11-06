@@ -72,11 +72,17 @@ class EmpresarController extends Controller
     }
     #=======================================================================
     public function habilitaDesabilita(EmpresaHabilitaDesabilitaRequest $request){
-        $user       = $request->user(); 
-        $empressa   = Empresar::find($request->id);
-
+        $user           = $request->user(); 
+        $empresa       = Empresar::find($request->id);
+        $ativo          = $empresa->ativo == 1 ? 0 : 1;
+        $request->acao  = $ativo == 1 ? 'Habilitou' : 'Desabilitou';    
+        $historico      = json_decode($empresa->historico_edicao ?? '[]', true);
+        array_push($historico, $this->historicoEmpresa($request));
+        
         try{
-            Empresar::where('id', $empressa->id)->update(['ativo' => $empressa->ativo == 1 ? 0 : 1]);
+            Empresar::where('id', $empresa->id)->update(['ativo'               => $ativo,
+                                                           'historico_edicao'   => json_encode($historico)
+                                                        ]);
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);
@@ -85,8 +91,11 @@ class EmpresarController extends Controller
         return response(['resultado'=>'Salvo com sucesso...'], 201);        
     }#=======================================================================
     public function update(EmpresaUpdate $request){
-        $user               = Auth::user();
-        $empresa = Empresar::find($request->id); 
+        $user           = Auth::user();
+        $empresa        = Empresar::find($request->id); 
+        $request->acao  = 'Editado';
+        $historico      = json_decode($empresa->historico_edicao ?? '[]', true);
+        array_push($historico, $this->historicoEmpresa($request));
         try{
             if($request->imgNome){
                 if ($empresa->anexo_logomarca && Storage::disk('anexos')->exists($empresa->anexo_logomarca)) {                          //-Deleta imagem se existir ao atualizar
@@ -113,7 +122,8 @@ class EmpresarController extends Controller
                     'email'             => $request->email,
                     'tel_um'            => $request->tel_um,
                     'tel_dois'          => $request->tel_dois,
-                    'tel_tres'          => $request->tel_tres,                    
+                    'tel_tres'          => $request->tel_tres,         
+                    'historico_edicao'  => json_encode($historico)        
             ]);
         }
         catch(\Exception $e){
@@ -179,5 +189,31 @@ class EmpresarController extends Controller
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
         }
         return response(['resultado'=>'Salvo com sucesso...'], 201);
+    }
+    private function historicoEmpresa($request){
+        $empresa = Empresar::find($request->id);
+        $historico = [
+            'Ação'              => $request->acao ,    
+            'Nome Fantasia'     => $empresa->nome_fantasia  ? $empresa->nome_fantasia   : null,
+            'Razão Social'      => $empresa->razao_social   ? $empresa->razao_social    : null,
+            'Cnpj Ou Cpf'       => $empresa->cnpjOuCpf      ? $empresa->cnpjOuCpf       : null,
+            'Cnpj/Cpf'          => $empresa->cnpjCpf        ? $empresa->cnpjCpf         : null,
+            'Insc. Estadual'    => $empresa->insc_estadual  ? $empresa->insc_estadual   : null,
+            'Insc. Municipal'   => $empresa->insc_municipal ? $empresa->insc_municipal  : null,
+            'rua'               => $empresa->rua            ? $empresa->rua             : null,
+            'Número'            => $empresa->numero         ? $empresa->numero          : null,
+            'Bairro'            => $empresa->bairro         ? $empresa->bairro          : null,
+            'Cidade'            => $empresa->cidade         ? $empresa->cidade          : null,
+            'Cep'               => $empresa->cep            ? $empresa->cep             : null,
+            'UF'                => $empresa->uf             ? $empresa->uf              : null,
+            'Site'              => $empresa->site           ? $empresa->site            : null,
+            'E-mail'            => $empresa->email          ? $empresa->email           : null,
+            'Tel. Um'           => $empresa->tel_um         ? $empresa->tel_um          : null,
+            'Tel. Dois'         => $empresa->tel_dois       ? $empresa->tel_dois        : null,
+            'Tel. Tres'         => $empresa->tel_tres       ? $empresa->tel_tres        : null,
+            'Data Hora'         => date('Y-m-d H:i:s'),
+            'Usuário Nome'      => $request->user()->name,
+        ];
+        return $historico;
     }
 }
