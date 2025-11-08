@@ -191,28 +191,27 @@ class EmpresarController extends Controller
         return response(['resultado'=>'Salvo com sucesso...'], 201);
     }
     private function historicoEmpresa($request){
-        $empresa = Empresar::find($request->id);
         $historico = [
-            'Ação'              => $request->acao ,    
-            'Nome Fantasia'     => $empresa->nome_fantasia  ? $empresa->nome_fantasia   : null,
-            'Razão Social'      => $empresa->razao_social   ? $empresa->razao_social    : null,
-            'Cnpj Ou Cpf'       => $empresa->cnpjOuCpf      ? $empresa->cnpjOuCpf       : null,
-            'Cnpj/Cpf'          => $empresa->cnpjCpf        ? $empresa->cnpjCpf         : null,
-            'Insc. Estadual'    => $empresa->insc_estadual  ? $empresa->insc_estadual   : null,
-            'Insc. Municipal'   => $empresa->insc_municipal ? $empresa->insc_municipal  : null,
-            'rua'               => $empresa->rua            ? $empresa->rua             : null,
-            'Número'            => $empresa->numero         ? $empresa->numero          : null,
-            'Bairro'            => $empresa->bairro         ? $empresa->bairro          : null,
-            'Cidade'            => $empresa->cidade         ? $empresa->cidade          : null,
-            'Cep'               => $empresa->cep            ? $empresa->cep             : null,
-            'UF'                => $empresa->uf             ? $empresa->uf              : null,
-            'Site'              => $empresa->site           ? $empresa->site            : null,
-            'E-mail'            => $empresa->email          ? $empresa->email           : null,
-            'Tel. Um'           => $empresa->tel_um         ? $empresa->tel_um          : null,
-            'Tel. Dois'         => $empresa->tel_dois       ? $empresa->tel_dois        : null,
-            'Tel. Tres'         => $empresa->tel_tres       ? $empresa->tel_tres        : null,
-            'Data Hora'         => date('Y-m-d H:i:s'),
-            'Usuário Nome'      => $request->user()->name,
+            'acao'             => $request->acao ,    
+            'nome_fantasia'    => $request->nome_fantasia  ? $request->nome_fantasia   : null,
+            'razao_social'     => $request->razao_social   ? $request->razao_social    : null,
+            'cnpjOuCpf'        => $request->cnpjOuCpf      ? $request->cnpjOuCpf       : null,
+            'cnpjCpf'          => $request->cnpjCpf        ? $request->cnpjCpf         : null,
+            'insc_estadual'    => $request->insc_estadual  ? $request->insc_estadual   : null,
+            'insc_municipal'   => $request->insc_municipal ? $request->insc_municipal  : null,
+            'rua'              => $request->rua            ? $request->rua             : null,
+            'numero'           => $request->numero         ? $request->numero          : null,
+            'bairro'           => $request->bairro         ? $request->bairro          : null,
+            'cidade'           => $request->cidade         ? $request->cidade          : null,
+            'cep'              => $request->cep            ? $request->cep             : null,
+            'uf'               => $request->uf             ? $request->uf              : null,
+            'site'             => $request->site           ? $request->site            : null,
+            'email'            => $request->email          ? $request->email           : null,
+            'tel_um'           => $request->tel_um         ? $request->tel_um          : null,
+            'tel_dois'         => $request->tel_dois       ? $request->tel_dois        : null,
+            'tel_tres'         => $request->tel_tres       ? $request->tel_tres        : null,
+            'data_hora'        => date('Y-m-d H:i:s'),
+            'usuario'          => $request->user()->name,
         ];
         return $historico;
     }
