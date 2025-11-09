@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\setores\SetoresEditRequest;
 use App\Http\Requests\setores\SetoresGridRequest;
 use App\Http\Requests\setores\SetoresHabilitaDesabilitaRequest;
+use App\Http\Requests\setores\SetoresUpdateRequest;
 use App\Models\cadastro\Setor;
 use App\Models\ErrorLog;
 
@@ -30,6 +32,38 @@ class SetorController extends Controller
             return response(['status' => 'obs', 'mensagem' =>'Erro no servidor']);
         }        
     }#=======================================================================
+    public function edit(SetoresEditRequest $request){
+        $user = $request->user(); 
+        try{
+            $setores = Setor::find($request->id);
+            $setores->makeHidden(['grupo_empresar_id', 'ativo', 'created_at', 'updated_at']);     //-Esconder esses campos na resposta
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['setores'=>$setores], 201);        
+    }#=======================================================================
+    public function update(SetoresUpdateRequest $request){
+        $user           = $request->user();
+        $setor          = Setor::find($request->id); 
+        $request->acao  = 'Editado';
+        $historico      = json_decode($setor->historico_edicao ?? '[]', true);
+        array_push($historico, $this->historico($request));
+        try{
+            Setor::where('id', $request->id)
+                ->update([
+                    'setor'             => $request->setor ,
+                    'historico_edicao'  => json_encode($historico)        
+            ]);
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['resultado'=>'Salvo com sucesso...', 'historico_edicao'=>$historico], 201);        
+    }
+    #=======================================================================
     public function habilitaDesabilita(SetoresHabilitaDesabilitaRequest $request){
         $user           = $request->user(); 
         $setor          = Setor::find($request->id);

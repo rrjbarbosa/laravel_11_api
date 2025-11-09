@@ -85,7 +85,7 @@ class EmpresarController extends Controller
         return response(['resultado'=>'Salvo com sucesso...'], 201);        
     }#=======================================================================
     public function update(EmpresaUpdate $request){
-        $user           = Auth::user();
+        $user           = $request->user();
         $empresa        = Empresar::find($request->id); 
         $request->acao  = 'Editado';
         $historico      = json_decode($empresa->historico_edicao ?? '[]', true);

@@ -45,6 +45,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //SETOR ====================================================================================================
     Route::get('/setores',                                           [SetorController::class, 'grid']);
     Route::patch('/setor-habitita-desabilita/{id}',                  [SetorController::class, 'habilitaDesabilita']);
+    Route::get('/setor-edit/{id}',                                   [SetorController::class, 'edit']); 
+    Route::post('/setor-update',                                     [SetorController::class, 'update']);
     //SETOR USER ===============================================================================================
     Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'gridParaUserUpdate']);    
     Route::patch('/setor-user-em-user-update-salvar/{user_id}',      [SetorUserController::class, 'update']);    
