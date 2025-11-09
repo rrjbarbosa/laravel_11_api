@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\setores\SetoresDesabilitarRemoverViculoComUsersRequest;
 use App\Http\Requests\setores\SetoresEditRequest;
 use App\Http\Requests\setores\SetoresGridRequest;
 use App\Http\Requests\setores\SetoresHabilitaDesabilitaRequest;
 use App\Http\Requests\setores\SetoresUpdateRequest;
 use App\Models\cadastro\Setor;
+use App\Models\cadastro\SetorUser;
 use App\Models\ErrorLog;
+use Illuminate\Http\Request;
 
 class SetorController extends Controller
 {
@@ -76,6 +79,27 @@ class SetorController extends Controller
             Setor::where('id', $setor->id)->update(['ativo'               => $ativo,
                                                      'historico_edicao'   => json_encode($historico)
                                              ]);
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['resultado'=>'Salvo com sucesso...'], 201);        
+    }#=======================================================================
+    public function DesabilitarRemoverVinculoUsuarios(SetoresDesabilitarRemoverViculoComUsersRequest $request){
+        $user           = $request->user(); 
+        $setor          = Setor::find($request->id);
+        $request->acao  = 'Desabilitou';    
+        $historico      = json_decode($setor->historico_edicao ?? '[]', true);
+        array_push($historico, $this->historico($request));
+        
+        try{
+            Setor::where('id', $setor->id)->update(['ativo'               => 0,
+                                                     'historico_edicao'   => json_encode($historico)
+                                             ]);
+            SetorUser::where('setor_id', $setor->id)
+                    ->where('grupo_empresar_id', $user->grupo_empresar_id)
+                    ->delete();                                 
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);

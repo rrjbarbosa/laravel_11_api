@@ -3,11 +3,10 @@
 namespace App\Http\Requests\setores;
 
 use App\Models\cadastro\Setor;
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class SetoresHabilitaDesabilitaRequest extends FormRequest
+class SetoresDesabilitarRemoverViculoComUsersRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -24,18 +23,7 @@ class SetoresHabilitaDesabilitaRequest extends FormRequest
             array_push($msgsAuthorize, 'Você não tem permissão nesse Setor, ou falta selecionar um setor');
             $this->retornaErroParaFront($msgsAuthorize, $inputs);
         }
-
-        $usuariosVinculadosAoSetor = User::join('setor_users', 'users.id', 'setor_users.user_id')
-                                          ->where('setor_users.setor_id', $this->id)
-                                          ->pluck('users.name')->toArray();
-        if (count($usuariosVinculadosAoSetor) >= 1) { //- Não permite excluir se existir setor vinculados a usuários 
-            $msgsAuthorize[] = '*** USUÁRIOS VINCULADOS A ESSE SETOR ***';
-            foreach($usuariosVinculadosAoSetor AS $usuarios){
-                $msgsAuthorize = [...$msgsAuthorize, $usuarios];    
-            }
-            $this->retornaErroParaFront($msgsAuthorize, $inputs);
-        }
-
+               
         return true;
     }
 

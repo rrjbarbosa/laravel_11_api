@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\cadastro;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\empresas\EmpresaDesabilitaRemoveVinculoComUserRequest;
 use App\Http\Requests\empresas\EmpresaEditRequest;
 use App\Models\ErrorLog;
 use App\Models\cadastro\Empresar;
@@ -77,6 +78,27 @@ class EmpresarController extends Controller
             Empresar::where('id', $empresa->id)->update(['ativo'               => $ativo,
                                                            'historico_edicao'   => json_encode($historico)
                                                         ]);
+        }
+        catch(\Exception $e){
+            $erro = new ErrorLog($user, $e);
+            return response(['status' => 'obs', 'mensagem' =>'Erro no servidor'], 500);
+        }
+        return response(['resultado'=>'Salvo com sucesso...'], 201);        
+    }#=======================================================================
+    public function DesabilitarRemoverVinculoUsuarios(EmpresaDesabilitaRemoveVinculoComUserRequest $request){
+        $user           = $request->user(); 
+        $empresa        = Empresar::find($request->id);
+        $request->acao  = 'Desabilitou';    
+        $historico      = json_decode($empresa->historico_edicao ?? '[]', true);
+        array_push($historico, $this->historicoEmpresa($request));
+        
+        try{
+            Empresar::where('id', $empresa->id)->update([  'ativo'              => 0,
+                                                           'historico_edicao'   => json_encode($historico)
+                                                        ]);
+            EmpresarUser::where('empresar_id', $empresa->id)
+                    ->where('grupo_empresar_id', $user->grupo_empresar_id)
+                    ->delete();                                 
         }
         catch(\Exception $e){
             $erro = new ErrorLog($user, $e);

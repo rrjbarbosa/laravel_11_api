@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/empresa-edit/{id}',                                    [EmpresarController::class, 'edit']); 
     Route::post('/empresa-update',                                       [EmpresarController::class, 'update']); 
     Route::patch('/empresas-habitita-desabilita/{id}',                  [EmpresarController::class, 'habilitaDesabilita']);
+    Route::patch('/empresa-desabilitar-remover-vinculo-usuarios/{id}',  [EmpresarController::class, 'DesabilitarRemoverVinculoUsuarios']);
     Route::post('/empresas-em-user-update-grid',                        [EmpresarController::class, 'empresaEmUserUpdateGrid']);
     Route::patch('/empresas-em-user-update-habitita-desabilita/{id}',   [EmpresarController::class, 'empresaEmUserUpdateHabilitaDesabilita']);
     //PERMISSÃO=================================================================================================
@@ -47,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/setor-habitita-desabilita/{id}',                  [SetorController::class, 'habilitaDesabilita']);
     Route::get('/setor-edit/{id}',                                   [SetorController::class, 'edit']); 
     Route::post('/setor-update',                                     [SetorController::class, 'update']);
+    Route::patch('/setor-desabilita-remover-vinculo-usuarios/{id}',  [SetorController::class, 'DesabilitarRemoverVinculoUsuarios']);    
     //SETOR USER ===============================================================================================
     Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'gridParaUserUpdate']);    
     Route::patch('/setor-user-em-user-update-salvar/{user_id}',      [SetorUserController::class, 'update']);    

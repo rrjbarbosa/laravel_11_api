@@ -5,9 +5,9 @@ namespace App\Http\Requests\empresas;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 use App\Models\cadastro\Empresar;
-use App\Models\User;
+use Illuminate\Validation\Rule;
 
-class EmpresaHabilitaDesabilitaRequest extends FormRequest
+class EmpresaDesabilitaRemoveVinculoComUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -25,17 +25,6 @@ class EmpresaHabilitaDesabilitaRequest extends FormRequest
             $this->retornaErroParaFront($msgsAuthorize, $inputs);
         }
 
-        $usuariosVinculadosEmpresa = User::join('empresar_user', 'users.id', 'empresar_user.user_id')
-                                          ->where('empresar_user.empresar_id', $this->id)
-                                          ->pluck('users.name')->toArray();
-        if (count($usuariosVinculadosEmpresa) >= 1) { //- Não permite excluir se existir Empresa vinculados a usuários 
-            $msgsAuthorize[] = '*** USUÁRIOS VINCULADOS A ESSA EMPRESA ***';
-            foreach($usuariosVinculadosEmpresa AS $usuarios){
-                $msgsAuthorize = [...$msgsAuthorize, $usuarios];    
-            }
-            $this->retornaErroParaFront($msgsAuthorize, $inputs);
-        }
-
         return true;
     }
 
@@ -49,7 +38,14 @@ class EmpresaHabilitaDesabilitaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'string'
+            
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            
         ];
     }
 }
