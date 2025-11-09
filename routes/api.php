@@ -7,6 +7,7 @@ use App\Http\Controllers\cadastro\EmpresarController;
 use App\Http\Controllers\cadastro\SetorUserController;
 use App\Http\Controllers\cadastro\AcessorController;
 use App\Http\Controllers\cadastro\AcessorUserController;
+use App\Http\Controllers\cadastro\SetorController;
 
 #**************************************************************************************************************
 #**************************************************************************************************************
@@ -41,8 +42,11 @@ Route::middleware('auth:sanctum')->group(function () {
     //PERMISSÃO=================================================================================================
     Route::post('/permissao-por-acesso',                        [PermissaorController::class, 'permissaoPorAcesso']);
     Route::patch('/permissao-por-acesso-salvar/{acessor_id}',   [PermissaorController::class, 'permissaoPorAcessoSalvar']);
+    //SETOR ====================================================================================================
+    Route::get('/setores',                                           [SetorController::class, 'grid']);
+    Route::patch('/setor-habitita-desabilita/{id}',                  [SetorController::class, 'habilitaDesabilita']);
     //SETOR USER ===============================================================================================
-    Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'grid']);    
+    Route::post('/setor-user-em-user-update-grid',                   [SetorUserController::class, 'gridParaUserUpdate']);    
     Route::patch('/setor-user-em-user-update-salvar/{user_id}',      [SetorUserController::class, 'update']);    
     //USERS=====================================================================================================
     Route::post('/users-grid-pesquisa',                     [UserController::class, 'gridPesquisa']);

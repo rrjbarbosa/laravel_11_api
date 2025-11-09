@@ -13,15 +13,9 @@ use App\Http\Requests\empresas\EmpresaEmUserUpdateGridRequest;
 use App\Http\Requests\empresas\EmpresaGridRequest;
 use App\Http\Requests\empresas\EmpresaHabilitaDesabilitaRequest;
 use App\Http\Requests\empresas\EmpresaUpdate;
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log as FacadesLog;
-
-use function Illuminate\Log\log;
 
 class EmpresarController extends Controller
 {   
